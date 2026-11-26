@@ -44,12 +44,20 @@ export default function unJeune1Solution() {
       </Box>
 
       <Box
+        component="ol"
+        className="fr-raw-list"
         sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 }, py: fr.spacing("8v") }}
       >
-        <Box sx={{ flex: 1 }}>
+        <Box component="li" sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/france.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" style={{ display: "block" }} />
-          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("8v") }}>350 000 opportunités</Typography>
-          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("2v"), mb: fr.spacing("3v") }}>pour lancer votre carrière</Typography>
+          <Typography component="h2" sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>
+            <Box component="span" sx={{ display: "block" }}>
+              350 000 opportunités
+            </Box>{" "}
+            <Box component="span" sx={{ display: "block", mt: fr.spacing("2v") }}>
+              pour lancer votre carrière
+            </Box>
+          </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
             Renseignez{" "}
             <Box component="span" sx={{ color: "#6A6AF4" }}>
@@ -61,9 +69,11 @@ export default function unJeune1Solution() {
             </Box>
           </Typography>
         </Box>
-        <Box sx={{ flex: 1 }}>
+        <Box component="li" sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/loupe.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" style={{ display: "block" }} />
-          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>En un clin d’oeil</Typography>
+          <Typography component="h2" sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>
+            En un clin d’oeil
+          </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
             Obtenez en un clin d’oeil la{" "}
             <Box component="span" sx={{ color: "#6A6AF4" }}>
@@ -71,9 +81,11 @@ export default function unJeune1Solution() {
             </Box>
           </Typography>
         </Box>
-        <Box sx={{ flex: 1 }}>
+        <Box component="li" sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/enveloppe.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" style={{ display: "block" }} />
-          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>Un contact facile</Typography>
+          <Typography component="h2" sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>
+            Un contact facile
+          </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
             <Box component="span" sx={{ color: "#6A6AF4" }}>
               Contactez facilement

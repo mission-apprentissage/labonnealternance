@@ -12,13 +12,14 @@ export function MetiersSection({ titre, text, liste }: { titre: string; text: st
     <Box>
       <SectionTitle title={title} description={text} />
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("6v"), alignItems: "start" }}>
+      <Box component="ul" className="fr-raw-list" sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("6v"), alignItems: "start" }}>
         {liste.map((metier) => {
           const metierSlug = findMetierLandingSlug(metier.title)
           // Maillage interne : on pointe vers la page métier sœur si elle existe, sinon repli vers la recherche (le titre du métier sert de texte libre).
           const href = metierSlug ? `/alternance/metier/${metierSlug}?${UTM_PARAMS}` : `/recherche?mode=emplois&q=${encodeURIComponent(metier.title)}&${UTM_PARAMS}`
           return (
             <Box
+              component="li"
               key={metier.title}
               sx={{
                 p: fr.spacing("6v"),
@@ -34,7 +35,9 @@ export function MetiersSection({ titre, text, liste }: { titre: string; text: st
             >
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <span className={fr.cx("fr-icon-briefcase-line" as any)} aria-hidden="true" style={{ color: "#417DC4", fontSize: "24px" }} />
-                <Typography sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", color: "#417DC4", textAlign: "center" }}>{metier.title}</Typography>
+                <Typography component="h3" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", color: "#417DC4", textAlign: "center" }}>
+                  {metier.title}
+                </Typography>
               </Box>
               <Typography sx={{ fontWeight: 700, fontSize: "22px", lineHeight: "28px", color: fr.colors.decisions.text.title.grey.default, textAlign: "center" }}>
                 {metier.offres} offres en alternance sur toute la France

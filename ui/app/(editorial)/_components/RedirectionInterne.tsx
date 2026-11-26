@@ -102,7 +102,7 @@ export const RedirectionInterne = async ({ source }: { source?: string }) => {
     >
       <Grid size={{ xs: 12, md: 9 }}>
         <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} justifyContent={"flex-start"}>
-          <Typography variant="h3" color={fr.colors.decisions.text.actionHigh.blueFrance.default}>
+          <Typography variant="h3" component="h2" color={fr.colors.decisions.text.actionHigh.blueFrance.default}>
             {getTitle(userType)}
           </Typography>
           <Typography fontSize={"1.125rem"}>{getDescription(userType)}</Typography>

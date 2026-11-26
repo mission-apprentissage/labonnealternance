@@ -160,42 +160,46 @@ const AwaitingAccountDescription = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), my: fr.spacing("2v") }}>
       <Typography>Voici les prochaines étapes qui vous attendent :</Typography>
-      <ContenuAvecPuce contenuPuce={1}>
-        <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-          Confirmez votre email
-        </Typography>
-        <Typography>
-          Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante :
-          <br />
-          <GreenText>{email}</GreenText>.
-        </Typography>
-        <ResendEmailContent onClick={onResendEmail} />
-      </ContenuAvecPuce>
-      {!skipAccountValidationStep && (
-        <ContenuAvecPuce contenuPuce={2}>
+      <Box component="ol" className="fr-raw-list" sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
+        <ContenuAvecPuce contenuPuce={1}>
           <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-            Votre compte sera validé manuellement
+            Confirmez votre email
           </Typography>
-          <Typography>Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne.</Typography>
+          <Typography>
+            Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante :
+            <br />
+            <GreenText>{email}</GreenText>.
+          </Typography>
+          <ResendEmailContent onClick={onResendEmail} />
         </ContenuAvecPuce>
-      )}
-      <ContenuAvecPuce contenuPuce={lastStepNumber}>
-        <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-          {inReview ? "Votre offre sera publiée après vérification par notre équipe" : "Ensuite, votre offre sera publiée !"}
-        </Typography>
-        <Typography>
-          Elle sera visible pour les candidats depuis La bonne alternance, sur les <DsfrLink href={`${PAGES.static.aPropos.getPath()}#nos-partenaires`}>sites partenaires</DsfrLink>
-          {withDelegation ? " et sera partagée aux centres de formation si vous en avez sélectionné." : "."}
-        </Typography>
-      </ContenuAvecPuce>
+        {!skipAccountValidationStep && (
+          <ContenuAvecPuce contenuPuce={2}>
+            <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+              Votre compte sera validé manuellement
+            </Typography>
+            <Typography>Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne.</Typography>
+          </ContenuAvecPuce>
+        )}
+        <ContenuAvecPuce contenuPuce={lastStepNumber}>
+          <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+            {inReview ? "Votre offre sera publiée après vérification par notre équipe" : "Ensuite, votre offre sera publiée !"}
+          </Typography>
+          <Typography>
+            Elle sera visible pour les candidats depuis La bonne alternance, sur les{" "}
+            <DsfrLink href={`${PAGES.static.aPropos.getPath()}#nos-partenaires`}>sites partenaires</DsfrLink>
+            {withDelegation ? " et sera partagée aux centres de formation si vous en avez sélectionné." : "."}
+          </Typography>
+        </ContenuAvecPuce>
+      </Box>
     </Box>
   )
 }
 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
-    <Box sx={{ display: "flex", mt: fr.spacing("4v"), flexDirection: "row", gap: fr.spacing("2v") }}>
+    <Box component="li" sx={{ display: "flex", mt: fr.spacing("4v"), flexDirection: "row", gap: fr.spacing("2v") }}>
       <Box
+        aria-hidden="true"
         sx={{
           display: "flex",
           alignItems: "center",

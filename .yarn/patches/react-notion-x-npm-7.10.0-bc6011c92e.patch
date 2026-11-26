@@ -1,5 +1,5 @@
 diff --git a/build/index.js b/build/index.js
-index cbcb3b3c0594ca78a50799c05e3b33687a8a7609..399f0ba7cf42ef36593306485c286c9aaf37a096 100644
+index cbcb3b3c0594ca78a50799c05e3b33687a8a7609..2200144a12b00e30e36bf3557029c0006266434d 100644
 --- a/build/index.js
 +++ b/build/index.js
 @@ -2986,20 +2986,25 @@ function Block(props) {
@@ -36,3 +36,142 @@ index cbcb3b3c0594ca78a50799c05e3b33687a8a7609..399f0ba7cf42ef36593306485c286c9a
            ]
          }
        );
+@@ -3007,49 +3012,13 @@ function Block(props) {
+     case "bulleted_list":
+     // fallthrough
+     case "numbered_list": {
+-      const wrapList = (content, start2) => block.type === "bulleted_list" ? /* @__PURE__ */ jsx32("ul", { className: cs("notion-list", "notion-list-disc", blockId), children: content }) : /* @__PURE__ */ jsx32(
+-        "ol",
+-        {
+-          start: start2,
+-          className: cs("notion-list", "notion-list-numbered", blockId),
+-          style: block.type === "numbered_list" ? {
+-            listStyleType: getListStyle(
+-              getListNestingLevel(block.id, recordMap.block)
+-            )
+-          } : void 0,
+-          children: content
+-        }
+-      );
+-      let output = null;
+-      const isTopLevel = block.type !== ((_j = getBlockValue2(recordMap.block[block.parent_id])) == null ? void 0 : _j.type);
+-      const start = getListNumber(block.id, recordMap.block);
+-      if (block.content) {
+-        const listItem = block.properties ? /* @__PURE__ */ jsx32("li", { children: /* @__PURE__ */ jsx32(Text, { value: block.properties.title, block }) }) : null;
+-        if (block.type === "bulleted_list") {
+-          output = /* @__PURE__ */ jsxs14(Fragment6, { children: [
+-            listItem,
+-            /* @__PURE__ */ jsx32("ul", { className: cs("notion-list", "notion-list-disc", blockId), children })
+-          ] });
+-        } else {
+-          const nestingLevel = getListNestingLevel(block.id, recordMap.block);
+-          output = /* @__PURE__ */ jsxs14(Fragment6, { children: [
+-            listItem,
+-            /* @__PURE__ */ jsx32(
+-              "ol",
+-              {
+-                className: cs("notion-list", "notion-list-numbered", blockId),
+-                style: {
+-                  listStyleType: getListStyle(nestingLevel + 1)
+-                },
+-                children
+-              }
+-            )
+-          ] });
+-        }
+-      } else {
+-        output = block.properties ? /* @__PURE__ */ jsx32("li", { children: /* @__PURE__ */ jsx32(Text, { value: block.properties.title, block }) }) : null;
++      if (!block.properties && !children) {
++        return null;
+       }
+-      return isTopLevel ? wrapList(output, start) : output;
++      return /* @__PURE__ */ jsxs14("li", { children: [
++        block.properties && /* @__PURE__ */ jsx32(Text, { value: block.properties.title, block }),
++        children
++      ] });
+     }
+     case "embed":
+       return /* @__PURE__ */ jsx32(components.Embed, { blockId, block });
+@@ -3445,7 +3414,7 @@ function NotionBlockRenderer({
+   blockId,
+   ...props
+ }) {
+-  var _a;
++  var _a, _b;
+   const { recordMap } = useNotionContext();
+   const id = blockId || Object.keys(recordMap.block)[0];
+   const block = getBlockValue3(recordMap.block[id]);
+@@ -3455,15 +3424,47 @@ function NotionBlockRenderer({
+     }
+     return null;
+   }
+-  return /* @__PURE__ */ jsx33(Block, { level, block, ...props, children: (_a = block == null ? void 0 : block.content) == null ? void 0 : _a.map((contentBlockId) => /* @__PURE__ */ jsx33(
+-    NotionBlockRenderer,
++  const children = [];
++  let listGroup = null;
++  for (const contentBlockId of (_a = block.content) != null ? _a : []) {
++    const element = /* @__PURE__ */ jsx33(
++      NotionBlockRenderer,
++      {
++        blockId: contentBlockId,
++        level: level + 1,
++        ...props
++      },
++      contentBlockId
++    );
++    const contentType = (_b = getBlockValue3(recordMap.block[contentBlockId])) == null ? void 0 : _b.type;
++    if (contentType === "bulleted_list" || contentType === "numbered_list") {
++      if (!listGroup || listGroup.type !== contentType) {
++        listGroup = { type: contentType, firstId: contentBlockId, items: [] };
++        children.push(listGroup);
++      }
++      listGroup.items.push(element);
++    } else {
++      listGroup = null;
++      children.push(element);
++    }
++  }
++  return /* @__PURE__ */ jsx33(Block, { level, block, ...props, children: block.content ? children.map((child) => child.items ? renderNotionList(child, recordMap, props.hideBlockId) : child) : void 0 }, id);
++}
++function renderNotionList({ type, firstId, items }, recordMap, hideBlockId) {
++  const blockId = hideBlockId ? "notion-block" : `notion-block-${uuidToId2(firstId)}`;
++  if (type === "bulleted_list") {
++    return /* @__PURE__ */ jsx33("ul", { className: cs("notion-list", "notion-list-disc", blockId), children: items }, `list-${firstId}`);
++  }
++  return /* @__PURE__ */ jsx33(
++    "ol",
+     {
+-      blockId: contentBlockId,
+-      level: level + 1,
+-      ...props
++      start: getListNumber(firstId, recordMap.block),
++      className: cs("notion-list", "notion-list-numbered", blockId),
++      style: { listStyleType: getListStyle(getListNestingLevel(firstId, recordMap.block)) },
++      children: items
+     },
+-    contentBlockId
+-  )) }, id);
++    `list-${firstId}`
++  );
+ }
+ function getMediumZoomMargin() {
+   const width = window.innerWidth;
+diff --git a/src/styles.css b/src/styles.css
+index a1edf55991dae947e4adcb05aaee95b1382f99c4..c1f87f9e6fa1f848497c0a66e39ac073b0f3cf96 100644
+--- a/src/styles.css
++++ b/src/styles.css
+@@ -884,6 +884,14 @@ svg.notion-page-icon {
+   white-space: pre-wrap;
+ }
+ 
++.notion-list li > .notion-list {
++  margin-top: 6px;
++}
++
++.notion-list li:has(> .notion-list:last-child) {
++  padding-bottom: 0;
++}
++
+ .notion-asset-wrapper {
+   margin: 0.5rem 0;
+   max-width: 100vw;

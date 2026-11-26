@@ -47,7 +47,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token, titleId }: 
               <BarberGuy sx={{ width: "34px", height: "38px" }} />
             </Box>
             <Box sx={{ mt: "12px", pb: "24px", pr: "10px" }}>
-              <Typography sx={{ fontSize: "20px", fontWeight: 700, mt: "6px" }}>
+              <Typography component="h2" sx={{ fontSize: "20px", fontWeight: 700, mt: "6px", color: "inherit" }}>
                 Psst, nous avons une{" "}
                 <Box component="span" sx={{ color: fr.colors.decisions.text.default.info.default }}>
                   info pour vous !

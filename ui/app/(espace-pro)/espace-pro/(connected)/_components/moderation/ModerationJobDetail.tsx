@@ -37,6 +37,13 @@ const Card = ({ title, children }: { title?: React.ReactNode; children: React.Re
   </Box>
 )
 
+// !important : DepotSimplifieStyling (espace OPCO) impose sa taille aux h2, cf. AgentNote.
+const CardTitle = ({ children }: { children: React.ReactNode }) => (
+  <Typography component="h2" sx={{ fontSize: "0.875rem !important", lineHeight: "1.5rem !important", fontWeight: 700 }}>
+    {children}
+  </Typography>
+)
+
 // Texte enregistré déjà nettoyé (sanitizeTextField) : rendu comme sur la fiche publique, cf. JobDescription.
 const StoredText = ({ html }: { html: string }) => <Typography component="div" sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("4v") }} dangerouslySetInnerHTML={{ __html: html }} />
 
@@ -46,13 +53,16 @@ const RecruiterCards = ({ detail }: { detail: IModerationJobDetailJson }) => {
     <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
       <Card
         title={
-          <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: fr.spacing("2v") }}>
-            <AccountTypeBadge type={recruiter.account_type} />
-            <Typography component="span" sx={{ fontSize: "0.875rem", fontWeight: 700 }}>
-              Statut du compte :
-            </Typography>
-            <AccountStatusBadge status={recruiter.account_status} />
-          </Box>
+          <>
+            <CardTitle>Compte recruteur</CardTitle>
+            <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: fr.spacing("2v"), mt: fr.spacing("2v") }}>
+              <AccountTypeBadge type={recruiter.account_type} />
+              <Typography component="span" sx={{ fontSize: "0.875rem", fontWeight: 700 }}>
+                Statut du compte :
+              </Typography>
+              <AccountStatusBadge status={recruiter.account_status} />
+            </Box>
+          </>
         }
       >
         <Field label="Nom" value={recruiter.last_name} />
@@ -62,7 +72,7 @@ const RecruiterCards = ({ detail }: { detail: IModerationJobDetailJson }) => {
         <Field label="Raison sociale" value={recruiter.raison_sociale} />
       </Card>
       {partner_company && (
-        <Card title={<Typography sx={{ fontSize: "0.875rem", fontWeight: 700 }}>Entreprise partenaire :</Typography>}>
+        <Card title={<CardTitle>Entreprise partenaire :</CardTitle>}>
           <Field label="Raison sociale" value={partner_company.raison_sociale} />
           <Field label="SIRET" value={partner_company.siret} />
           <Field label="Nom" value={partner_company.last_name} />
@@ -78,10 +88,6 @@ const OfferContent = ({ offer }: { offer: IModerationJobDetailJson["offer"] }) =
   const isCustomDescription = offer.offer_description_mode === OFFER_DESCRIPTION_MODE.CUSTOM
   return (
     <Box sx={{ mt: fr.spacing("6v") }}>
-      <Typography component="h1" variant="h2" sx={{ mb: fr.spacing("4v") }}>
-        {offer.offer_title}
-      </Typography>
-      {offer.offer_rome_appellation && <Typography sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.mention.grey.default }}>{offer.offer_rome_appellation}</Typography>}
       <Typography component="h2" variant="h4" sx={{ mb: fr.spacing("3v") }}>
         La présentation de l’entreprise
       </Typography>
@@ -157,6 +163,14 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
           <span />
         )}
         <ModerationJobNavigation jobId={jobId} userType={userType} />
+      </Box>
+      <Box sx={{ mb: fr.spacing("6v") }}>
+        <Typography component="h1" variant="h2">
+          {data.offer.offer_title}
+        </Typography>
+        {data.offer.offer_rome_appellation && (
+          <Typography sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>{data.offer.offer_rome_appellation}</Typography>
+        )}
       </Box>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), alignItems: "flex-start" }}>
         <Box sx={{ width: { xs: "100%", md: "33%" }, flexShrink: 0 }}>

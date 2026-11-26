@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { isAutoRadiusWidening } from "shared/utils/auto-radius"
-import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { zoneScopedId } from "@/app/_components/zone-ids"
@@ -494,7 +493,6 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
           </SearchMobilePanel>
         )}
       </Box>
-      <Footer zone="recherche" />
     </>
   )
 }

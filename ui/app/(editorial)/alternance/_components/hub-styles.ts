@@ -30,7 +30,7 @@ export const kpiCardSx = {
   minWidth: 0,
 }
 
-export const cardLinkStyle = { textDecoration: "none", backgroundImage: "none" } as const
+export const cardLinkStyle = { display: "block", height: "100%", textDecoration: "none", backgroundImage: "none" } as const
 
 export const cardTitleSx = {
   fontWeight: 700,

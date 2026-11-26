@@ -570,7 +570,9 @@ export const FormulaireEditionOffreStep1 = ({
                       sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }}
                     />
                     <Box>
-                      <Typography sx={{ fontSize: "0.875rem", fontWeight: 600, mb: fr.spacing("1v") }}>Comment bien rédiger votre offre ?</Typography>
+                      <Typography component="h3" sx={{ fontSize: "0.875rem", fontWeight: 600, mb: fr.spacing("1v") }}>
+                        Comment bien rédiger votre offre ?
+                      </Typography>
                       <Typography sx={{ fontSize: "0.8125rem" }}>
                         Consultez notre charte pour une offre rapidement acceptée et publiée. Notre équipe modère les contenus : toute description non conforme à la réglementation
                         pourra entraîner la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes.{" "}

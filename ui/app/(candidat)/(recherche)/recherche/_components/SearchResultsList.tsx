@@ -43,7 +43,7 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
 
   const cardRefs = useRef(new Map<string, HTMLElement>())
-  const hitsListRef = useRef<HTMLDivElement>(null)
+  const hitsListRef = useRef<HTMLUListElement>(null)
   // Index du premier résultat de la page demandée par « Voir plus de résultats » : le focus y est
   // placé à son arrivée, le bouton pouvant disparaître avec la dernière page (RGAA 12.8).
   const focusHitIndexRef = useRef<number | null>(null)
@@ -100,7 +100,7 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
   if (isError) {
     return (
       <Box sx={{ mt: fr.spacing("4v") }}>
-        <Alert severity="error" title="Erreur" description="Une erreur est survenue lors du chargement des résultats. Veuillez réessayer." />
+        <Alert as="h2" severity="error" title="Erreur" description="Une erreur est survenue lors du chargement des résultats. Veuillez réessayer." />
       </Box>
     )
   }
@@ -143,23 +143,24 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
 
   return (
     <Box>
-      <Box ref={hitsListRef}>
+      <Box component="ul" className="fr-raw-list" ref={hitsListRef}>
         {allHits.map((hit, index) => (
-          <SearchHitCard
-            key={String(hit._id)}
-            hit={hit}
-            currentParams={params}
-            position={index + 1}
-            isHighlighted={Boolean(hit.url_id) && hit.url_id === highlightedHitId}
-            cardRef={
-              hit.url_id
-                ? (node) => {
-                    if (node) cardRefs.current.set(hit.url_id!, node)
-                    else cardRefs.current.delete(hit.url_id!)
-                  }
-                : undefined
-            }
-          />
+          <li key={String(hit._id)}>
+            <SearchHitCard
+              hit={hit}
+              currentParams={params}
+              position={index + 1}
+              isHighlighted={Boolean(hit.url_id) && hit.url_id === highlightedHitId}
+              cardRef={
+                hit.url_id
+                  ? (node) => {
+                      if (node) cardRefs.current.set(hit.url_id!, node)
+                      else cardRefs.current.delete(hit.url_id!)
+                    }
+                  : undefined
+              }
+            />
+          </li>
         ))}
       </Box>
 

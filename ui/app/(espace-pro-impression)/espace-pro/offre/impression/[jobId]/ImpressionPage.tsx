@@ -73,6 +73,7 @@ export default function PrintableJobPage() {
           recrute en alternance !
         </Typography>
         <Typography
+          component="h1"
           sx={{
             mx: "auto",
             fontSize: "32px",

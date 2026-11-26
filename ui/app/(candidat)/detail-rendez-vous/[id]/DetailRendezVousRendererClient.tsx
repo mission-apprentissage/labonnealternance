@@ -119,8 +119,8 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
     >
       {appointment?.user && (
         <Box sx={{ my: fr.spacing("4v") }}>
-          <Typography component="span" color="primary" variant="h6">
-            Voici les coordonnées du contact :{" "}
+          <Typography component="h2" color="primary" variant="h6">
+            Voici les coordonnées du contact :
           </Typography>
           <Box sx={{ my: fr.spacing("4v") }}>
             {appointment.user?.type && (

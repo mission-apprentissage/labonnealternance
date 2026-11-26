@@ -122,6 +122,8 @@ export default function UnJeune1Solution() {
 
       {/* Fond pleine largeur sans sortir du Container : l'ombre étend la couleur, clip-path la limite à l'axe horizontal. */}
       <Box
+        component="ul"
+        className="fr-raw-list"
         sx={{
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
@@ -133,7 +135,7 @@ export default function UnJeune1Solution() {
           clipPath: "inset(0 -100vmax)",
         }}
       >
-        <Box sx={{ flex: 1 }}>
+        <Box component="li" sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/france.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
 
           <Typography sx={statValueSx}>3,5 M</Typography>
@@ -141,13 +143,13 @@ export default function UnJeune1Solution() {
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>Sur La bonne alternance en 2025</Typography>
         </Box>
 
-        <Box sx={{ flex: 1 }}>
+        <Box component="li" sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/enveloppe.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography sx={statValueSx}>200 000</Typography>
           <Typography sx={statLabelSx}>candidats</Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>postulent aux offres chaque année</Typography>
         </Box>
-        <Box sx={{ flex: 1 }}>
+        <Box component="li" sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/mains.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography sx={statValueSx}>30%</Typography>
           <Typography sx={statLabelSx}>1 apprenti sur 3</Typography>
@@ -162,7 +164,7 @@ export default function UnJeune1Solution() {
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
+              <Typography component="h2" sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
                 Postez votre offre d’alternance en quelques secondes
               </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>Sélectionnez le métier sur lequel vous recrutez, nous générons votre offre instantanément.</Typography>
@@ -173,7 +175,7 @@ export default function UnJeune1Solution() {
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
+              <Typography component="h2" sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
                 Nous la diffusons gratuitement au plus près des candidats
               </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
@@ -198,7 +200,7 @@ export default function UnJeune1Solution() {
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
+              <Typography component="h2" sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
                 Recevez les profils des candidats dans votre boite mail
               </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
@@ -210,7 +212,7 @@ export default function UnJeune1Solution() {
       </Box>
 
       <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
-        <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
+        <Typography component="h2" sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
           Recrutez un jeune qui se forme tout en bénéficiant, sous certaines conditions, d’aides financières
         </Typography>
         <Typography sx={{ mt: fr.spacing("4v") }}>

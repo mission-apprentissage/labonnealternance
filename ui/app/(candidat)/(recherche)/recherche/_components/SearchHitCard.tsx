@@ -42,17 +42,26 @@ const isFormation = (hit: Hit) => hit.type === "formation"
 // Mêmes badges que la carte legacy (composants feuilles réutilisés), pilotés par les
 // champs des documents de recherche au lieu de l'ideaType legacy.
 function HitTags({ hit }: { hit: Hit }) {
-  const tags: React.ReactNode[] = []
+  const tags: { key: string; Tag: React.ComponentType }[] = []
 
-  if (isAlgoCompany(hit)) tags.push(<TagCandidatureSpontanee key="candidature-spontanee" />)
-  else if (isFormation(hit)) tags.push(<TagFormation key="formation" />)
-  else if (hit.is_formation_included) tags.push(<TagEmploiFormation key="emploi-formation" />)
-  else tags.push(<TagOffreEmploi key="offre-emploi" />)
+  if (isAlgoCompany(hit)) tags.push({ key: "candidature-spontanee", Tag: TagCandidatureSpontanee })
+  else if (isFormation(hit)) tags.push({ key: "formation", Tag: TagFormation })
+  else if (hit.is_formation_included) tags.push({ key: "emploi-formation", Tag: TagEmploiFormation })
+  else tags.push({ key: "offre-emploi", Tag: TagOffreEmploi })
 
-  if (hit.is_disabled_elligible) tags.push(<LbaJobEngagementTag key="handi" />)
-  if (hit.start_type === JOB_START_TYPE.DES_QUE_POSSIBLE) tags.push(<TagRecrutementUrgent key="urgent" />)
+  if (hit.is_disabled_elligible) tags.push({ key: "handi", Tag: LbaJobEngagementTag })
+  if (hit.start_type === JOB_START_TYPE.DES_QUE_POSSIBLE) tags.push({ key: "urgent", Tag: TagRecrutementUrgent })
 
-  return <Box sx={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>{tags}</Box>
+  return (
+    // Les `li` en flex : un tag inline-block dans un bloc prendrait la hauteur de ligne du parent.
+    <Box component="ul" className="fr-raw-list" sx={{ display: "flex", flexWrap: "wrap", gap: "4px", "& > li": { display: "flex" } }}>
+      {tags.map(({ key, Tag }) => (
+        <li key={key}>
+          <Tag />
+        </li>
+      ))}
+    </Box>
+  )
 }
 
 function CompanyLine({ hit }: { hit: Hit }) {
@@ -165,6 +174,7 @@ export function SearchHitCard({ hit, currentParams, position, cardRef, isHighlig
           horizontal
           linkProps={{ href: detailUrl, onClick: trackClick }}
           start={<HitTags hit={hit} />}
+          titleAs="h2"
           title={
             <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>
               {hit.title ?? ""}

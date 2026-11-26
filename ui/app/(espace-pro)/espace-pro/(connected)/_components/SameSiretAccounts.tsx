@@ -93,11 +93,17 @@ export const SameSiretAccountsTable = ({ accounts, viewer }: { accounts: ISameSi
                           Aucun
                         </Typography>
                       ) : (
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("1v") }}>
+                        <Box
+                          component="ul"
+                          className="fr-raw-list"
+                          sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("1v"), "& > li": { mx: "0 !important", mb: "0 !important" } }}
+                        >
                           {account.matches.map((match) => (
-                            <Badge key={match} severity="warning" small noIcon as="span">
-                              {MATCH_LABELS[match]}
-                            </Badge>
+                            <li key={match}>
+                              <Badge severity="warning" small noIcon as="span">
+                                {MATCH_LABELS[match]}
+                              </Badge>
+                            </li>
                           ))}
                         </Box>
                       )}

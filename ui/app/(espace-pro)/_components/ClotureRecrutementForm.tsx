@@ -55,13 +55,14 @@ export interface IClotureRecrutementPayload {
 
 export interface ClotureRecrutementFormProps {
   titleId?: string
+  titleAs?: "h1" | "h2"
   offreId: string
   onSuccess: (result?: { alreadyClosed?: boolean }) => void
   onCancel: () => void
   submit: (offreId: string, payload: IClotureRecrutementPayload) => Promise<{ alreadyClosed?: boolean } | unknown>
 }
 
-export default function ClotureRecrutementForm({ titleId, offreId, onSuccess, onCancel, submit }: ClotureRecrutementFormProps) {
+export default function ClotureRecrutementForm({ titleId, titleAs = "h2", offreId, onSuccess, onCancel, submit }: ClotureRecrutementFormProps) {
   const [submitError, setSubmitError] = useState(false)
 
   const onSubmit = async (values: IClotureRecrutementFormValues) => {
@@ -122,7 +123,7 @@ export default function ClotureRecrutementForm({ titleId, offreId, onSuccess, on
           "& .fr-select-group, & .fr-input-group": { marginBottom: "0 !important" },
         }}
       >
-        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} component="h2" sx={{ mb: 0 }}>
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} component={titleAs} sx={{ mb: 0 }}>
           Clôturer votre recrutement
         </Typography>
 

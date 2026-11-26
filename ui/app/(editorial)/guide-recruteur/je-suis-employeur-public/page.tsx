@@ -96,7 +96,9 @@ const JeSuisEmployeurPublicPage = () => {
         </Paragraph>
       </Section>
       <Section title="L'apprentissage et le handicap dans la fonction publique">
-        <Paragraph fontWeight={"bold"}>Les aides du FIPHFP</Paragraph>
+        <Paragraph component="h3" fontWeight={"bold"}>
+          Les aides du FIPHFP
+        </Paragraph>
         <Paragraph>
           Dans la fonction publique, le FIPHFP (Fonds pour l’insertion des personnes handicapées dans la fonction publique) finance des aides qui permettent aux employeurs publics
           de favoriser l’insertion professionnelle et le maintien dans l’emploi des personnes en situation de handicap.
@@ -109,7 +111,9 @@ const JeSuisEmployeurPublicPage = () => {
           Pour en savoir plus, vous pouvez consulter{" "}
           <DsfrLink href="https://www.fiphfp.fr/employeurs/ressources-employeurs/centre-de-ressources?item=2924">le catalogue des interventions du FIPHFP</DsfrLink>.
         </Paragraph>
-        <Paragraph fontWeight={"bold"}>Le recrutement et, le cas échéant, la titularisation d'apprentis BOETH dans la fonction publique</Paragraph>
+        <Paragraph component="h3" fontWeight={"bold"}>
+          Le recrutement et, le cas échéant, la titularisation d'apprentis BOETH dans la fonction publique
+        </Paragraph>
         <Paragraph>
           La loi du 6 août 2019 de transformation de la fonction publique a instauré un dispositif expérimental, jusqu'au 6 août 2025, permettant la titularisation dans la fonction
           publique (secteur public non industriel et commercial) des bénéficiaires de l'obligation d'emploi de travailleurs handicapés (BOETH), à l'issue de leur contrat

@@ -11,7 +11,7 @@ export default function AdminProcessorPage() {
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.adminProcessor]} />
-      <Typography variant="h2" gutterBottom>
+      <Typography variant="h2" component="h1" gutterBottom>
         {PAGES.static.adminProcessor.title}
       </Typography>
       <ProcessorStatusProvider>

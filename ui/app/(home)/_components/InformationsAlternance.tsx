@@ -4,6 +4,7 @@ export const InformationsAlternance = () => {
   return (
     <Card
       title="Je m'informe sur l'alternance"
+      titleAs="h2"
       desc={"Les réponses à vos questions pour tout savoir sur l'alternance"}
       background
       border

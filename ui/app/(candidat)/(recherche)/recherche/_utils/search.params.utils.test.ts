@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { ISearchPageParams } from "./search.params.utils"
-import { buildRechercheH1, buildSearchPageCanonical, buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
+import { buildRechercheH1, buildSearchPageCanonical, buildSearchPageTitle, buildSearchUrl, DEFAULT_RECHERCHE_H1, parseSearchPageParams } from "./search.params.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -185,12 +185,13 @@ describe("buildRechercheH1", () => {
     expect(buildRechercheH1({ q: "Data analyst", lieu_label: "  " })).toBe("Alternance Data analyst")
   })
 
-  it("retourne null sans métier", () => {
-    expect(buildRechercheH1({})).toBeNull()
+  it("retourne le libellé par défaut sans métier, même avec un lieu", () => {
+    expect(buildRechercheH1({})).toBe(DEFAULT_RECHERCHE_H1)
+    expect(buildRechercheH1({ lieu_label: "Lyon" })).toBe(DEFAULT_RECHERCHE_H1)
   })
 
   it("traite un métier vide comme une absence", () => {
-    expect(buildRechercheH1({ q: "  " })).toBeNull()
+    expect(buildRechercheH1({ q: "  " })).toBe(DEFAULT_RECHERCHE_H1)
   })
 })
 

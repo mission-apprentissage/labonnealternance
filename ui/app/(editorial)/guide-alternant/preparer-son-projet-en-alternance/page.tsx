@@ -35,7 +35,9 @@ const PreparerSonProjetEnAlternancePage = () => {
       metadata={metadata}
     >
       <Section>
-        <Paragraph bold>Les étapes clés :</Paragraph>
+        <Paragraph component="h2" bold>
+          Les étapes clés :
+        </Paragraph>
         <ParagraphList
           listItems={[
             "Choisir le métier vers lequel se tourner ;",
@@ -48,7 +50,9 @@ const PreparerSonProjetEnAlternancePage = () => {
         />
       </Section>
       <Section>
-        <Paragraph bold>Rôle en tant qu'alternant :</Paragraph>
+        <Paragraph component="h2" bold>
+          Rôle en tant qu'alternant :
+        </Paragraph>
         <ParagraphList
           listItems={[
             "suivre avec assiduité la formation et se présenter aux examens ;",
@@ -317,59 +321,59 @@ const PreparerSonProjetEnAlternancePage = () => {
           Si vous êtes apprenti, les régions proposent souvent des aides complémentaires : achat de matériel professionnel, réductions sur les transports, mobilité à
           l'international, etc. Pour les connaître, vous pouvez consulter le site internet de votre région.
         </Paragraph>
-        <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("1v")} color={fr.colors.decisions.text.title.grey.default}>
-          <Typography>
+        <Box component="ul" className="fr-raw-list" display={"flex"} flexDirection={"column"} gap={fr.spacing("1v")} color={fr.colors.decisions.text.title.grey.default}>
+          <Typography component="li">
             <DsfrLink href="https://www.auvergnerhonealpes.fr/">AUVERGNE-RHÔNE-ALPES</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.bourgognefranchecomte.fr/">BOURGOGNE-FRANCHE-COMTÉ</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.bretagne.bzh/">BRETAGNE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.centre-valdeloire.fr/">CENTRE-VAL DE LOIRE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.isula.corsica/">CORSE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.grandest.fr/">GRAND EST</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.regionguadeloupe.fr/">GUADELOUPE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.ctguyane.fr/">GUYANE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.hautsdefrance.fr/">HAUTS-DE-FRANCE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.iledefrance.fr/">ÎLE-DE-FRANCE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.collectivitedemartinique.mq/">MARTINIQUE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.mayotte.fr/">MAYOTTE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.normandie.fr/">NORMANDIE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.nouvelle-aquitaine.fr/">NOUVELLE-AQUITAINE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.laregion.fr/">OCCITANIE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.paysdelaloire.fr/">PAYS DE LA LOIRE</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.maregionsud.fr/">PROVENCE-ALPES-CÔTE D'AZUR (PACA)</DsfrLink>
           </Typography>
-          <Typography>
+          <Typography component="li">
             <DsfrLink href="https://www.regionreunion.com/">RÉUNION</DsfrLink>
           </Typography>
         </Box>

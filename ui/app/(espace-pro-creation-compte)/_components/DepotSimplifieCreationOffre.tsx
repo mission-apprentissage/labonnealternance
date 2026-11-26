@@ -47,6 +47,7 @@ export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: b
       {!hasChangedScreen && (
         <Bandeau
           type="success"
+          titleAs="p"
           header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
           description="Déposez votre offre dès maintenant."
         />

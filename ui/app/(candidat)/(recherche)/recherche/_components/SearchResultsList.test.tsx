@@ -49,6 +49,14 @@ describe("SearchResultsList, fin de liste plafonnée par l'API", () => {
   })
 })
 
+describe("SearchResultsList, structure de la liste", () => {
+  it("rend les résultats dans une liste, un élément par carte", () => {
+    const html = render([page(0, 3, 3)], false)
+    expect(html).toContain('<ul class="fr-raw-list')
+    expect(html.match(/<li><article><\/article><\/li>/g)).toHaveLength(3)
+  })
+})
+
 describe("SearchResultsList, comptage des apparitions en recherche", () => {
   const mixedPage = {
     hits: [

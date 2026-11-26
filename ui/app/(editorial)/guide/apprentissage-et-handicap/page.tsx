@@ -1,5 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { InfoSection } from "@/app/(editorial)/_components/InfoSection"
@@ -84,43 +83,33 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
       </InfoSection>
       <Section title="Qui peut bénéficier d’un contrat d’apprentissage aménagé ?">
         <Paragraph>Le contrat d’apprentissage aménagé est accessible dans le secteur privé comme dans le secteur public :</Paragraph>
-        <Box display={"flex"} flexDirection={"column"} gap={0}>
-          <ParagraphList
-            listItems={[
-              <>
-                <Typography component="span" fontWeight={"bold"}>
-                  dès l’âge de 16 ans (sauf dérogation) et sans limite d’âge maximal (contrairement au contrat d’apprentissage de droit commun) pour :
-                </Typography>
-              </>,
-            ]}
-          />
-          <Box sx={{ ml: fr.spacing("10v"), mt: 0 }}>
-            <ParagraphList
-              listItems={[
-                "les personnes qui bénéficient de la reconnaissance de la qualité de travailleur handicapé (RQTH) ;",
-                "les personnes bénéficiaires de l'obligation d'emploi (BOE), à l’exception des ayants droit de victimes ou pensionnés de guerre ;",
-              ]}
-            />
-          </Box>
-          <ParagraphList
-            listItems={[
-              <>
-                <Typography component="span" fontWeight={"bold"}>
-                  aux jeunes âgés de 15 à 20 ans (“équivalences jeunes”), qui bénéficient soit :
-                </Typography>
-              </>,
-            ]}
-          />
-          <Box sx={{ ml: fr.spacing("10v"), mt: 0 }}>
-            <ParagraphList
-              listItems={[
-                "d’un projet personnalisé de scolarisation (PPS) ;",
-                "de l’attribution de l’allocation d’éducation de l’enfant handicapé (AEEH) ;",
-                "de la prestation de compensation (PCH).",
-              ]}
-            />
-          </Box>
-        </Box>
+        <ParagraphList
+          listItems={[
+            <>
+              <Typography component="span" fontWeight={"bold"}>
+                dès l’âge de 16 ans (sauf dérogation) et sans limite d’âge maximal (contrairement au contrat d’apprentissage de droit commun) pour :
+              </Typography>
+              <ParagraphList
+                listItems={[
+                  "les personnes qui bénéficient de la reconnaissance de la qualité de travailleur handicapé (RQTH) ;",
+                  "les personnes bénéficiaires de l'obligation d'emploi (BOE), à l’exception des ayants droit de victimes ou pensionnés de guerre ;",
+                ]}
+              />
+            </>,
+            <>
+              <Typography component="span" fontWeight={"bold"}>
+                aux jeunes âgés de 15 à 20 ans (“équivalences jeunes”), qui bénéficient soit :
+              </Typography>
+              <ParagraphList
+                listItems={[
+                  "d’un projet personnalisé de scolarisation (PPS) ;",
+                  "de l’attribution de l’allocation d’éducation de l’enfant handicapé (AEEH) ;",
+                  "de la prestation de compensation (PCH).",
+                ]}
+              />
+            </>,
+          ]}
+        />
         <Paragraph>
           La conclusion d’un contrat d’apprentissage aménagé est accessible à un candidat âgé de 16 ans au minimum (15 ans et un jour pour les personnes ayant terminé leur cycle du
           collège) et sans limite d’âge maximum.
@@ -193,46 +182,40 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
         <Paragraph>
           Les employeurs qui choisissent de recruter un apprenti en situation de handicap bénéficient d'une aide de l'État pour le recrutement et d’aides spécifiques :
         </Paragraph>
-        <Box display={"flex"} flexDirection={"column"} gap={0}>
-          <ParagraphList
-            listItems={[
-              <>
-                <Typography component={"span"} fontWeight={"bold"}>
-                  Pour les employeurs du secteur privé :
-                </Typography>{" "}
-                l’aide à l’embauche en contrat d’apprentissage d’une personne handicapée proposée par l'
-                <DsfrLink href="https://www.agefiph.fr/">Agefiph</DsfrLink>.
-              </>,
+        <ParagraphList
+          listItems={[
+            <>
+              <Typography component={"span"} fontWeight={"bold"}>
+                Pour les employeurs du secteur privé :
+              </Typography>{" "}
+              l’aide à l’embauche en contrat d’apprentissage d’une personne handicapée proposée par l'
+              <DsfrLink href="https://www.agefiph.fr/">Agefiph</DsfrLink>.
+            </>,
+            <>
               <Typography component="span" fontWeight={"bold"}>
                 Pour les employeurs du secteur public (non industriel et commercial) (qui ne bénéficient pas de l'aide de l'État) :
-              </Typography>,
-            ]}
-          />
-          <Box sx={{ ml: fr.spacing("10v") }}>
-            <ParagraphList
-              listItems={[
-                "l’indemnité d’apprentissage en cas de recrutement d’une personne en situation de handicap avec une prise en charge par le FIPHFP du coût salarial chargé de l’apprenti à hauteur de 80 %;",
-                "l’aide financière destinée à la prise en charge (par un opérateur externe) des frais d’accompagnement des personnes en situation de handicap pour la mise en œuvre d’un dispositif d’accompagnement et de soutien",
-                "la prime d’insertion si l’employeur conclut avec l’apprenti un contrat à durée indéterminée à l’issue de sa période d’apprentissage.",
-                "Etc.",
-              ]}
-            />
-          </Box>
-          <ParagraphList
-            listItems={[
-              <>
-                <DsfrLink href="https://www.fiphfp.fr/employeurs/nos-aides-financieres/catalogue-des-interventions">Consulter le catalogue des interventions du FIPHFP</DsfrLink> si
-                vous avez conclu un contrat avec un employeur public ;
-              </>,
-              <>
-                <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2026-01/Agefiph-Metodia_2026-01.pdf">
-                  Consultez l’offre d’aides financières et services de l’Agefiph - PDF, 397 ko
-                </DsfrLink>{" "}
-                si vous avez conclu un contrat avec un employeur privé.
-              </>,
-            ]}
-          />
-        </Box>
+              </Typography>
+              <ParagraphList
+                listItems={[
+                  "l’indemnité d’apprentissage en cas de recrutement d’une personne en situation de handicap avec une prise en charge par le FIPHFP du coût salarial chargé de l’apprenti à hauteur de 80 %;",
+                  "l’aide financière destinée à la prise en charge (par un opérateur externe) des frais d’accompagnement des personnes en situation de handicap pour la mise en œuvre d’un dispositif d’accompagnement et de soutien",
+                  "la prime d’insertion si l’employeur conclut avec l’apprenti un contrat à durée indéterminée à l’issue de sa période d’apprentissage.",
+                  "Etc.",
+                ]}
+              />
+            </>,
+            <>
+              <DsfrLink href="https://www.fiphfp.fr/employeurs/nos-aides-financieres/catalogue-des-interventions">Consulter le catalogue des interventions du FIPHFP</DsfrLink> si
+              vous avez conclu un contrat avec un employeur public ;
+            </>,
+            <>
+              <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2026-01/Agefiph-Metodia_2026-01.pdf">
+                Consultez l’offre d’aides financières et services de l’Agefiph - PDF, 397 ko
+              </DsfrLink>{" "}
+              si vous avez conclu un contrat avec un employeur privé.
+            </>,
+          ]}
+        />
         <Paragraph>
           L’Agefiph et le FIPHFP proposent également des aides techniques et humaines qui permettent aux employeurs publics de favoriser l’insertion professionnelle et le maintien
           dans l’emploi des personnes en situation de handicap, y compris celle des apprentis.

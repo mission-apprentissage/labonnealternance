@@ -93,6 +93,8 @@ export function HeroDiplome({ titre, sousTitre, kpis, searchHref }: { titre: str
 
       {/* KPI cards - overlapping the banner */}
       <Box
+        component="ul"
+        className="fr-raw-list"
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
@@ -112,6 +114,7 @@ export function HeroDiplome({ titre, sousTitre, kpis, searchHref }: { titre: str
 
           return (
             <Box
+              component="li"
               key={config.key}
               sx={{
                 textAlign: "center",

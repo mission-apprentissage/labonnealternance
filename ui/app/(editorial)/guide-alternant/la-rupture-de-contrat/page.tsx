@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
@@ -193,27 +193,43 @@ const LaRuptureDeContratPage = () => {
         />
       </Section>
       <Section title="Questions fréquentes">
-        <Paragraph>
-          <Typography fontWeight="bold">Peut-on rompre un contrat d'apprentissage ?</Typography>
-          Oui. Pendant les 45 premiers jours en entreprise, la rupture est libre et sans motif. Après ce délai, elle n'est possible que par accord mutuel, démission après avoir
-          saisi le médiateur de l'apprentissage, faute grave, inaptitude médicale ou obtention anticipée du diplôme.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight="bold">Comment « démissionner » d'un contrat d'apprentissage ?</Typography>
-          L'apprenti doit saisir le médiateur de l'apprentissage (Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat ou Chambre d'agriculture), attendre 5
-          jours calendaires, puis informer son employeur par écrit. La rupture prend effet 7 jours calendaires après cette notification. Pour un apprenti mineur, l'acte de rupture
-          doit être cosigné par le représentant légal.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight="bold">Qu'est-ce que le médiateur de l'apprentissage ? </Typography>
-          Le médiateur de l'apprentissage est un intervenant rattaché aux chambres consulaires (Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat, chambre
-          d'agriculture) qui intervient obligatoirement avant toute démission d'un apprenti. Il dispose de 15 jours maximum pour agir.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight="bold">Quelle est la différence entre rupture d'un contrat d'apprentissage et de professionnalisation ?</Typography>
-          Le contrat d'apprentissage suit un régime spécifique avec 45 jours pendant lesquels la rupture est possible sans motif puis des cas de rupture limités par le Code du
-          travail. Le contrat de professionnalisation obéit au droit commun des CDD ou CDI, avec des règles de rupture différentes selon la forme du contrat.
-        </Paragraph>
+        <Box>
+          <Paragraph component="h3" bold>
+            Peut-on rompre un contrat d'apprentissage ?
+          </Paragraph>
+          <Paragraph>
+            Oui. Pendant les 45 premiers jours en entreprise, la rupture est libre et sans motif. Après ce délai, elle n'est possible que par accord mutuel, démission après avoir
+            saisi le médiateur de l'apprentissage, faute grave, inaptitude médicale ou obtention anticipée du diplôme.
+          </Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" bold>
+            Comment « démissionner » d'un contrat d'apprentissage ?
+          </Paragraph>
+          <Paragraph>
+            L'apprenti doit saisir le médiateur de l'apprentissage (Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat ou Chambre d'agriculture), attendre 5
+            jours calendaires, puis informer son employeur par écrit. La rupture prend effet 7 jours calendaires après cette notification. Pour un apprenti mineur, l'acte de
+            rupture doit être cosigné par le représentant légal.
+          </Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" bold>
+            Qu'est-ce que le médiateur de l'apprentissage ?
+          </Paragraph>
+          <Paragraph>
+            Le médiateur de l'apprentissage est un intervenant rattaché aux chambres consulaires (Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat, chambre
+            d'agriculture) qui intervient obligatoirement avant toute démission d'un apprenti. Il dispose de 15 jours maximum pour agir.
+          </Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" bold>
+            Quelle est la différence entre rupture d'un contrat d'apprentissage et de professionnalisation ?
+          </Paragraph>
+          <Paragraph>
+            Le contrat d'apprentissage suit un régime spécifique avec 45 jours pendant lesquels la rupture est possible sans motif puis des cas de rupture limités par le Code du
+            travail. Le contrat de professionnalisation obéit au droit commun des CDD ou CDI, avec des règles de rupture différentes selon la forme du contrat.
+          </Paragraph>
+        </Box>
         <Paragraph>
           Sources :{" "}
           <DsfrLink href="https://www.legifrance.gouv.fr/search/code?tab_selection=code&searchField=ALL&query=&page=1&init=true&nomCode=mjXqUg%3D%3D">code du travail</DsfrLink>,

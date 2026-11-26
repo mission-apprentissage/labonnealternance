@@ -262,9 +262,9 @@ export function BarChartVertical({
       </Box>
 
       {legend && legend.length > 0 ? (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("4v") }}>
+        <Box component="ul" className="fr-raw-list" sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("4v") }}>
           {legend.map((entry) => (
-            <Box key={entry.label} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
+            <Box component="li" key={entry.label} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
               <Box sx={{ width: "12px", height: "12px", backgroundColor: entry.color, borderRadius: "2px", flexShrink: 0 }} aria-hidden="true" />
               <Typography component="span" sx={{ fontSize: "13px", color: fr.colors.decisions.text.default.grey.default }}>
                 {entry.label}

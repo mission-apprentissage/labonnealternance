@@ -183,7 +183,9 @@ function AdministrationOpco() {
       <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
 
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("2v") }}>
-        <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Entreprises</Typography>
+        <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
+          Entreprises
+        </Typography>
       </Box>
       <Typography sx={{ mb: fr.spacing("6v") }}>
         <DsfrLink href={getOpcoGuideHref("guide-comptes")} onClick={() => trackOpcoGuideLinkClicked("entreprises")}>

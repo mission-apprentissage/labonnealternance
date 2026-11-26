@@ -37,10 +37,12 @@ export const IntentionPageResult = ({ intention, canceled = false }: { intention
       ) : (
         <>
           <Typography
+            component="h1"
             sx={{
               fontSize: "22px",
               fontWeight: 700,
               maxWidth: "555px",
+              color: "inherit",
             }}
           >
             Merci beaucoup d’avoir pris le temps d’envoyer un commentaire au candidat.

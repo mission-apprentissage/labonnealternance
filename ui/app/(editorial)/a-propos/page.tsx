@@ -237,6 +237,8 @@ export default function APropos() {
                   <Typography>La bonne alternance expose les offres d'emploi en alternance de nombreuses entreprises, dont :</Typography>
 
                   <Box
+                    component="ul"
+                    className="fr-raw-list"
                     sx={{
                       display: "grid",
                       gap: fr.spacing("4v"),
@@ -247,17 +249,39 @@ export default function APropos() {
                       },
                     }}
                   >
-                    <Image src={decathlon} alt="Decathlon" style={{ width: "100%", height: "auto" }} />
-                    <Image src={loreal} alt="L'Oréal" style={{ width: "100%", height: "auto" }} />
-                    <Image src={engie} alt="Engie" style={{ width: "100%", height: "auto" }} />
-                    <Image src={laposte} alt="Groupe La Poste" style={{ width: "100%", height: "auto" }} />
-                    <Image src={bpce} alt="Groupe BPCE" style={{ width: "100%", height: "auto" }} />
-                    <Image src={auchan} alt="Auchan" style={{ width: "100%", height: "auto" }} />
-                    <Image src={institutPasteur} alt="Institut Pasteur" style={{ width: "100%", height: "auto" }} />
-                    <Image src={daher} alt="Daher" style={{ width: "100%", height: "auto" }} />
-                    <Image src={edf} alt="EDF" style={{ width: "100%", height: "auto" }} />
-                    <Image src={enedis} alt="Enedis" style={{ width: "100%", height: "auto" }} />
-                    <Image src={toulouseMetropole} alt="Toulouse Métropole" style={{ width: "100%", height: "auto" }} />
+                    <li>
+                      <Image src={decathlon} alt="Decathlon" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={loreal} alt="L'Oréal" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={engie} alt="Engie" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={laposte} alt="Groupe La Poste" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={bpce} alt="Groupe BPCE" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={auchan} alt="Auchan" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={institutPasteur} alt="Institut Pasteur" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={daher} alt="Daher" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={edf} alt="EDF" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={enedis} alt="Enedis" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={toulouseMetropole} alt="Toulouse Métropole" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
                   </Box>
 
                   <Typography>
@@ -266,6 +290,8 @@ export default function APropos() {
                   </Typography>
 
                   <Box
+                    component="ul"
+                    className="fr-raw-list"
                     sx={{
                       display: "grid",
                       gap: fr.spacing("4v"),
@@ -276,24 +302,52 @@ export default function APropos() {
                       },
                     }}
                   >
-                    <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
-                    <Image src={linkedin} alt="LinkedIn" style={{ width: "100%", height: "auto" }} />
-                    <Image src={pass} alt="PASS" style={{ width: "100%", height: "auto" }} />
-                    <Image src={ep} alt="OPCO EP" style={{ width: "100%", height: "auto" }} />
-                    <Image src={rhalternance} alt="RH Alternance" style={{ width: "100%", height: "auto" }} />
-                    <Image src={hellowork} alt="Hellowork" style={{ width: "100%", height: "auto" }} />
-                    <Image src={veritone} alt="Veritone" style={{ width: "100%", height: "auto" }} />
-                    <Image src={meteojob} alt="Météo Job" style={{ width: "100%", height: "auto" }} />
-                    <Image src={leboncoin} alt="Le Bon Coin" style={{ width: "100%", height: "auto" }} />
-                    <Image src={taleez} alt="Taleez" style={{ width: "100%", height: "auto" }} />
-                    <Image src={talentplug} alt="Talent Plug" style={{ width: "100%", height: "auto" }} />
-                    <Image src={apec} alt="Apec" style={{ width: "100%", height: "auto" }} />
-                    <Image src={apecita} alt="apecita, l'emploi agri, agro et environnement" style={{ width: "100%", height: "auto" }} />
+                    <li>
+                      <Image src={franceTravail} alt="France Travail" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={linkedin} alt="LinkedIn" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={pass} alt="PASS" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={ep} alt="OPCO EP" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={rhalternance} alt="RH Alternance" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={hellowork} alt="Hellowork" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={veritone} alt="Veritone" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={meteojob} alt="Météo Job" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={leboncoin} alt="Le Bon Coin" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={taleez} alt="Taleez" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={talentplug} alt="Talent Plug" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={apec} alt="Apec" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={apecita} alt="apecita, l'emploi agri, agro et environnement" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
                   </Box>
 
                   <Typography>La bonne alternance collabore également avec les acteurs publics suivants :</Typography>
 
                   <Box
+                    component="ul"
+                    className="fr-raw-list"
                     sx={{
                       display: "grid",
                       gap: fr.spacing("4v"),
@@ -304,21 +358,53 @@ export default function APropos() {
                       },
                     }}
                   >
-                    <Image src={parcoursup} alt="Parcoursup - Entrez dans l'enseignement supérieur" style={{ width: "100%", height: "auto" }} />
-                    <Image src={onisep} alt="Onisep" style={{ width: "100%", height: "auto" }} />
-                    <Image src={affelnet} alt="Choisir son affectation - Demander une formation et un établissement après la 3ème" style={{ width: "100%", height: "auto" }} />
-                    <Image src={ocapiat} alt="OPCO Ocapiat" style={{ width: "100%", height: "auto" }} />
-                    <Image src={opco2i} alt="OPCO 2i" style={{ width: "100%", height: "auto" }} />
-                    <Image src={sante} alt="OPCO Santé" style={{ width: "100%", height: "auto" }} />
-                    <Image src={atlas} alt="OPCO Atlas" style={{ width: "100%", height: "auto" }} />
-                    <Image src={afdas} alt="OPCO Afdas - Demain sera formation" style={{ width: "100%", height: "auto" }} />
-                    <Image src={commerce} alt="L'opcommerce - opérateur de compétences" style={{ width: "100%", height: "auto" }} />
-                    <Image src={constructys} alt="OPCO Constructys - votre partenaire compétences" style={{ width: "100%", height: "auto" }} />
-                    <Image src={uniformation} alt="OPCO Uniformation" style={{ width: "100%", height: "auto" }} />
-                    <Image src={akto} alt="OPCO Akto - L'humain au coeur des services" style={{ width: "100%", height: "auto" }} />
-                    <Image src={diagoriente} alt="Diagoriente" style={{ width: "100%", height: "auto" }} />
-                    <Image src={tbd} alt="Tableau de bord de l'apprentissage" style={{ width: "100%", height: "auto" }} />
-                    <Box sx={{ width: "100%", height: "auto", backgroundColor: "#fff", border: "2px solid #dcdcdc" }}>
+                    <li>
+                      <Image src={parcoursup} alt="Parcoursup - Entrez dans l'enseignement supérieur" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={onisep} alt="Onisep" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image
+                        src={affelnet}
+                        alt="Choisir son affectation - Demander une formation et un établissement après la 3ème"
+                        style={{ display: "block", width: "100%", height: "auto" }}
+                      />
+                    </li>
+                    <li>
+                      <Image src={ocapiat} alt="OPCO Ocapiat" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={opco2i} alt="OPCO 2i" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={sante} alt="OPCO Santé" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={atlas} alt="OPCO Atlas" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={afdas} alt="OPCO Afdas - Demain sera formation" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={commerce} alt="L'opcommerce - opérateur de compétences" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={constructys} alt="OPCO Constructys - votre partenaire compétences" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={uniformation} alt="OPCO Uniformation" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={akto} alt="OPCO Akto - L'humain au coeur des services" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={diagoriente} alt="Diagoriente" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <li>
+                      <Image src={tbd} alt="Tableau de bord de l'apprentissage" style={{ display: "block", width: "100%", height: "auto" }} />
+                    </li>
+                    <Box component="li" sx={{ width: "100%", height: "auto", backgroundColor: "#fff", border: "2px solid #dcdcdc" }}>
                       <Image src={rco} alt="Réseau des Carif-Oref" style={{ width: "100%", height: "auto" }} />
                     </Box>
                   </Box>

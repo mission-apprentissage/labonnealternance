@@ -32,5 +32,10 @@ const getErrorText = (error: string) => {
 
 export function WidgetPostulerError({ error }: { error: string }) {
   const errorText = getErrorText(error)
-  return <Box sx={{ width: "250px", textAlign: "center", m: "auto", my: 8 }}>{errorText}</Box>
+  return (
+    <Box sx={{ width: "250px", textAlign: "center", m: "auto", my: 8 }}>
+      <h1 className="fr-sr-only">Postuler à l'offre</h1>
+      {errorText}
+    </Box>
+  )
 }

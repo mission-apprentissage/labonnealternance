@@ -12,9 +12,15 @@ export function OffresSection({ offreCount, offres, searchHref }: { offreCount: 
     <Box>
       <SectionTitle title={`Découvrez les ${offreCount} offres disponibles pour ce diplôme`} />
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("3v"), mb: fr.spacing("8v"), alignItems: "start" }}>
+      <Box
+        component="ul"
+        className="fr-raw-list"
+        sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("3v"), mb: fr.spacing("8v"), alignItems: "start" }}
+      >
         {offres.map((offre) => (
-          <CarteOffre key={offre._id?.toString() ?? offre.partner_job_id} card={offre} utmParams={UTM_PARAMS} />
+          <li key={offre._id?.toString() ?? offre.partner_job_id}>
+            <CarteOffre card={offre} utmParams={UTM_PARAMS} />
+          </li>
         ))}
       </Box>
 
