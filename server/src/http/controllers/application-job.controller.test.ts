@@ -24,6 +24,13 @@ import { getS3FileSize, s3ReadAsString } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 vi.mock("@/common/utils/aws-utils", () => ({ s3ReadAsString: vi.fn(), getS3FileSize: vi.fn().mockResolvedValue(null) }))
+// L'envoi immédiat d'une réponse passe par le mailer : sans SMTP en test, il échouerait et rien ne serait enregistré.
+vi.mock("@/services/mailer.service", () => ({
+  default: {
+    sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["candidat@example.com"] }),
+    renderEmail: vi.fn().mockResolvedValue("<html></html>"),
+  },
+}))
 
 // Les candidatures d'une offre n'appartiennent qu'à son recruteur ou au CFA qui la gère : chaque profil
 // voisin (autre entreprise, autre CFA, OPCO de rattachement) doit être refusé.
@@ -731,6 +738,31 @@ describe("GET /application/job/:jobId/application/:applicationId/reply-token", (
       company_recruitment_intention: null,
       company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
     })
+  })
+
+  it("date la réponse envoyée tout de suite après « Modifier ma réponse », qui avait annulé l'envoi programmé", async () => {
+    const recruiter = await saveRecruiter("recruteur-jeton-envoi-immediat")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Immediat", { job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, company_siret: recruiter.entreprise.siret })
+    const { token } = (
+      await getReplyToken(offer._id, application._id, ApplicationIntention.REFUS, (await logUser(httpClient, "recruteur-jeton-envoi-immediat")).bearerToken)
+    ).json()
+    const headers = { authorization: `Bearer ${token}` }
+
+    await httpClient().inject({ method: "GET", path: `/api/application/intention/schedule/${application._id}?intention=${ApplicationIntention.REFUS}`, headers })
+    await httpClient().inject({ method: "POST", path: `/api/application/intention/cancel/${application._id}`, headers })
+    const send = await httpClient().inject({
+      method: "POST",
+      path: `/api/application/intentionComment/${application._id}`,
+      body: { company_recruitment_intention: ApplicationIntention.REFUS, company_feedback: "Merci pour votre candidature.", refusal_reasons: [] },
+      headers,
+    })
+
+    expect(send.statusCode).toBe(200)
+    const saved = await getDbCollection("applications").findOne({ _id: application._id })
+    expect(saved).toMatchObject({ company_recruitment_intention: ApplicationIntention.REFUS, company_feedback_send_status: CompanyFeebackSendStatus.SENT })
+    expect(saved?.company_recruitment_intention_date).toBeInstanceOf(Date)
+    expect(saved?.company_recruitment_intention_date).toEqual(saved?.company_feedback_date)
   })
 
   it("refuse le jeton à une candidature déjà traitée par un autre canal", async () => {

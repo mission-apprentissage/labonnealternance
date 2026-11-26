@@ -1450,15 +1450,19 @@ export const sendRecruiterIntention = async ({
   })
 
   if (sentMessageId?.accepted?.length) {
+    const sentAt = new Date()
     await getDbCollection("applications").findOneAndUpdate(
       { _id: application_id },
       {
         $set: {
           company_recruitment_intention,
+          // « Modifier ma réponse » annule l'envoi programmé, ce qui efface l'intention et sa date (cf.
+          // cancelScheduledRecruiterIntention) : l'envoi les repose ensemble.
+          company_recruitment_intention_date: sentAt,
           company_feedback,
           company_feedback_send_status: CompanyFeebackSendStatus.SENT,
           company_feedback_reasons: refusal_reasons,
-          company_feedback_date: new Date(),
+          company_feedback_date: sentAt,
         },
       }
     )
