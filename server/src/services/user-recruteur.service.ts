@@ -364,7 +364,12 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   )
 }
 
-const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrganization, status: AccessStatus, reason: string) => {
+const setAccessOfUserOnOrganization = async (
+  { user, organization }: UserAndOrganization,
+  status: AccessStatus,
+  reason: string,
+  options?: Parameters<typeof modifyPermissionToUser>[2]
+) => {
   const { type } = organization
   const orgId = type === CFA ? organization.cfa._id : organization.entreprise._id
   await modifyPermissionToUser(
@@ -377,7 +382,8 @@ const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrga
       validation_type: VALIDATION_UTILISATEUR.AUTO,
       status,
       reason,
-    }
+    },
+    options
   )
 }
 
@@ -386,7 +392,7 @@ export const autoValidateUser = async (props: UserAndOrganization, reason: strin
 }
 
 export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, reason = AUTO_VALIDATION_REFUSED_REASON) => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, reason)
+  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, reason, { recordReasonChange: true })
 }
 
 export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], reason: string) => {

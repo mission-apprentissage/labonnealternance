@@ -108,7 +108,7 @@ export const buildValidationSignal = (lastEvent: IUserStatusValidationJson | und
         return { tone: "warning", title: "Validation automatique non concluante", description: `${cause}${date ? ` le ${date}` : ""}.` }
       }
       if (reason === AUTO_VALIDATION_REFUSED_REASON) {
-        return { tone: "warning", title: "Pas de validation automatique possible", description: "Aucune source automatique ne confirme l'entreprise." }
+        return { tone: "warning", title: "Pas de validation automatique possible", description: "Aucune source automatique ne confirme ce compte." }
       }
       return { tone: "warning", title: "Validation manuelle attendue", description: reason ? `Motif : ${reason}.` : "Aucun motif enregistré." }
     default:

@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import type { IDetectionEvaluation, IDetectionRule } from "@/jobs/detection/detection-rule"
 import { DETECTION_GLOBAL_KEY } from "@/jobs/detection/detection-rule"
-import { API_KEY_CREATION_REASON, AUTO_VALIDATION_INDETERMINATE_PREFIX } from "@/services/auto-validation-reasons"
+import { API_KEY_CREATION_REASON, AUTO_VALIDATION_INDETERMINATE_PREFIX, AUTO_VALIDATION_REFUSED_REASON } from "@/services/auto-validation-reasons"
 import { getRolesWindowFilter } from "./recruiter-detection-utils"
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -46,9 +46,12 @@ export const classifyRole = (events: IRoleManagement["status"]): { outcome: IRol
   if (autoGrant) {
     return { outcome: "auto", ...categorizeAutoReason(autoGrant.reason) }
   }
-  const indeterminate = events.find((event) => event.status === AccessStatus.AWAITING_VALIDATION && event.reason.startsWith(AUTO_VALIDATION_INDETERMINATE_PREFIX))
-  if (indeterminate) {
-    return { outcome: "indeterminate", category: `indéterminé (${indeterminate.reason.slice(AUTO_VALIDATION_INDETERMINATE_PREFIX.length)})`, bal: false }
+  // Dernier motif de la validation automatique : un rejeu peut trancher un rôle d'abord indéterminé, ou l'inverse.
+  const lastAutoReason = events.findLast(
+    ({ status, reason }) => status === AccessStatus.AWAITING_VALIDATION && (reason === AUTO_VALIDATION_REFUSED_REASON || reason.startsWith(AUTO_VALIDATION_INDETERMINATE_PREFIX))
+  )?.reason
+  if (lastAutoReason?.startsWith(AUTO_VALIDATION_INDETERMINATE_PREFIX)) {
+    return { outcome: "indeterminate", category: `indéterminé (${lastAutoReason.slice(AUTO_VALIDATION_INDETERMINATE_PREFIX.length)})`, bal: false }
   }
   return { outcome: "refused", category: "refus ou validation manuelle", bal: false }
 }

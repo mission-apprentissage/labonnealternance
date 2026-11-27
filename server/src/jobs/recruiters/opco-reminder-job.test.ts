@@ -3,6 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { roleManagementEventFactory, saveEntreprise, saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import type { IRoleManagementEvent } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -46,7 +47,7 @@ const insertOpcoUser = async (email: string) => {
   return opcoUser
 }
 
-const insertEntrepriseAwaitingValidation = async (date: Date) => {
+const insertEntrepriseAwaitingValidation = async (date: Date, laterEvents: IRoleManagementEvent[] = []) => {
   const entreprise = await saveEntreprise({ _id: new ObjectId(), opco: OPCOS_LABEL.AKTO })
   await getDbCollection("rolemanagements").insertOne({
     _id: new ObjectId(),
@@ -55,7 +56,7 @@ const insertEntrepriseAwaitingValidation = async (date: Date) => {
     authorized_id: entreprise._id.toString(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    status: [roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION, date })],
+    status: [roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION, date }), ...laterEvents],
   })
   return entreprise
 }
@@ -85,6 +86,33 @@ describe("opco-reminder-job", () => {
     expect(vi.mocked(mailer.sendEmail)).toHaveBeenCalledTimes(1)
     expect.soft(sentCountPhrase()).toContain("1 nouvelle entreprise")
     expect.soft(sentCountPhrase()).toContain("depuis notre dernier message")
+  })
+
+  it("ne recompte pas un compte déjà en attente dont le motif change après le dernier envoi", async () => {
+    const awaiting = (date: string, reason: string) => roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION, date: new Date(date), reason })
+    await insertOpcoUser("opco@example.com")
+    await insertLastReminderRun(new Date("2025-01-10T00:00:00.000Z"))
+    await insertEntrepriseAwaitingValidation(new Date("2025-01-01T00:00:00.000Z"), [awaiting("2025-01-12T00:00:00.000Z", "pas de validation automatique possible")])
+    await insertEntrepriseAwaitingValidation(new Date("2025-01-12T00:00:00.000Z"), [awaiting("2025-01-12T00:00:01.000Z", "pas de validation automatique possible")])
+
+    await opcoReminderJob()
+
+    expect(sentCountPhrase()).toContain("1 nouvelle entreprise")
+  })
+
+  it("compte un compte revenu en attente après le dernier envoi", async () => {
+    const event = (status: AccessStatus, date: string) => roleManagementEventFactory({ status, date: new Date(date) })
+    await insertOpcoUser("opco@example.com")
+    await insertLastReminderRun(new Date("2025-01-10T00:00:00.000Z"))
+    await insertEntrepriseAwaitingValidation(new Date("2025-01-01T00:00:00.000Z"), [
+      event(AccessStatus.GRANTED, "2025-01-02T00:00:00.000Z"),
+      event(AccessStatus.AWAITING_VALIDATION, "2025-01-12T00:00:00.000Z"),
+    ])
+    await insertEntrepriseAwaitingValidation(new Date("2025-01-12T00:00:00.000Z"), [event(AccessStatus.GRANTED, "2025-01-13T00:00:00.000Z")])
+
+    await opcoReminderJob()
+
+    expect(sentCountPhrase()).toContain("1 nouvelle entreprise")
   })
 
   it("borne sur started_at : un compte arrivé pendant l'exécution précédente reste compté", async () => {

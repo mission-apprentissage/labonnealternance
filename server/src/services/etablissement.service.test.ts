@@ -27,6 +27,7 @@ import {
   verifyRecruiterEmailInUse,
 } from "./etablissement.service"
 import { getGeoCoordinates } from "./geolocation.service"
+import { createOrganizationUser } from "./user-recruteur.service"
 
 vi.mock("@/common/utils/sentry-utils")
 vi.mock("./geolocation.service", async (importOriginal) => ({
@@ -302,6 +303,86 @@ describe("autoValidateUserRoleOnCompany : raison enregistrée sur le rôle", () 
     mockBal().reply(503)
 
     expect(await validate()).toMatchObject({ validated: false, status: AccessStatus.AWAITING_VALIDATION, reason: "validation automatique indéterminée : BAL indisponible" })
+  })
+
+  describe("rôle créé en attente par l'inscription", () => {
+    const signUpThenValidate = async () => {
+      const entreprise = await saveEntreprise({ siret })
+      const { user } = await createOrganizationUser({
+        userFields: { first_name: "Camille", last_name: "Martin", phone: "", origin: "", email, last_action_date: new Date() },
+        is_email_checked: false,
+        organization: { type: ENTREPRISE, entreprise },
+      })
+      const validateRole = () => autoValidateUserRoleOnCompany({ user, organization: { type: ENTREPRISE, entreprise } })
+      const reasons = async () => (await getDbCollection("rolemanagements").findOne({ user_id: user._id }))?.status.map(({ status, reason }) => [status, reason])
+      return { validateRole, reasons, user }
+    }
+
+    it.each([
+      ["un refus ferme", () => mockBal().reply(200, { status: "invalid", is_valid: false }), "pas de validation automatique possible"],
+      [
+        "un fournisseur indisponible",
+        () => mockBal().reply(200, { status: "indeterminate", is_valid: false, unavailable_sources: ["akto"] }),
+        "validation automatique indéterminée : akto indisponible",
+      ],
+      ["BAL indisponible", () => mockBal().reply(503), "validation automatique indéterminée : BAL indisponible"],
+    ])("enregistre le motif du passage en manuel après %s", async (_label, mock, reason) => {
+      mock()
+      const { validateRole, reasons } = await signUpThenValidate()
+
+      await validateRole()
+
+      expect(await reasons()).toEqual([
+        [AccessStatus.AWAITING_VALIDATION, "création de compte"],
+        [AccessStatus.AWAITING_VALIDATION, reason],
+      ])
+    })
+
+    it("n'empile pas le même motif quand la validation est rejouée", async () => {
+      mockBal().times(2).reply(200, { status: "invalid", is_valid: false })
+      const { validateRole, reasons } = await signUpThenValidate()
+
+      await validateRole()
+      await validateRole()
+
+      expect(await reasons()).toHaveLength(2)
+    })
+
+    it("ajoute le nouveau motif quand il change au rejeu", async () => {
+      const { validateRole, reasons } = await signUpThenValidate()
+      mockBal().reply(200, { status: "invalid", is_valid: false })
+      await validateRole()
+      mockBal().reply(503)
+      await validateRole()
+
+      expect((await reasons())?.map(([, reason]) => reason)).toEqual([
+        "création de compte",
+        "pas de validation automatique possible",
+        "validation automatique indéterminée : BAL indisponible",
+      ])
+    })
+
+    it("ne recouvre pas le motif posé par un OPCO quand la validation est rejouée", async () => {
+      mockBal().reply(200, { status: "invalid", is_valid: false })
+      const { validateRole, reasons, user } = await signUpThenValidate()
+      await getDbCollection("rolemanagements").updateOne(
+        { user_id: user._id },
+        {
+          $push: {
+            status: roleManagementEventFactory({
+              status: AccessStatus.AWAITING_VALIDATION,
+              validation_type: VALIDATION_UTILISATEUR.MANUAL,
+              reason: "pas mon OPCO",
+              date: new Date(),
+            }),
+          },
+        }
+      )
+
+      await validateRole()
+
+      expect((await reasons())?.at(-1)).toEqual([AccessStatus.AWAITING_VALIDATION, "pas mon OPCO"])
+    })
   })
 })
 

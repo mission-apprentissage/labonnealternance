@@ -18,6 +18,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/api-referentiel-catalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import type { IBalValidationResult } from "@/services/bal.service"
+import { validationOrganisation } from "@/services/bal.service"
 import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
@@ -163,6 +165,23 @@ describe("POST /etablissement/creation", () => {
 
       const roles = await Promise.all(users.map((user) => getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(user._id) })))
       expect(roles.map((role) => role?.opco_at_creation)).toEqual([OPCOS_LABEL.AKTO, OPCOS_LABEL.AKTO])
+    })
+
+    it.each<[string, IBalValidationResult, string]>([
+      ["un refus de BAL", { status: "invalid" }, "pas de validation automatique possible"],
+      ["un fournisseur indisponible", { status: "indeterminate", unavailableSources: ["akto"] }, "validation automatique indéterminée : akto indisponible"],
+    ])("enregistre sur le rôle le motif du passage en manuel après %s", async (_label, balResult, reason) => {
+      vi.mocked(validationOrganisation).mockResolvedValueOnce(balResult)
+
+      const response = await callCreation(defaultCreationEntreprisePayload)
+      const { user, validated } = response.json() as CreationResponse
+
+      const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(user._id) })
+      expect.soft(validated).toBe(false)
+      expect.soft(role?.status.map((event) => [event.status, event.reason])).toEqual([
+        [AccessStatus.AWAITING_VALIDATION, "création de compte"],
+        [AccessStatus.AWAITING_VALIDATION, reason],
+      ])
     })
 
     it("Vérifie qu'un email ne peut pas créer plusieurs comptes", async () => {
@@ -355,6 +374,7 @@ describe("POST /etablissement/creation", () => {
 
         expect.soft(validated).toBe(false)
         expect.soft((await roleEvents(user._id)).map(({ status }) => status)).not.toContain(AccessStatus.GRANTED)
+        expect.soft((await roleEvents(user._id)).map(({ reason }) => reason)).toEqual(["création de compte", "pas de validation automatique possible"])
       })
     })
 

@@ -74,6 +74,7 @@ describe("buildValidationSignal", () => {
   it("distingue le refus de la validation automatique", () => {
     expect(buildValidationSignal(event({ status: ETAT_UTILISATEUR.ATTENTE, reason: "pas de validation automatique possible" }))).toMatchObject({
       title: "Pas de validation automatique possible",
+      description: "Aucune source automatique ne confirme ce compte.",
     })
   })
 
