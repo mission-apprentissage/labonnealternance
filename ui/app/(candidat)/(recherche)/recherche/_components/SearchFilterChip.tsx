@@ -35,7 +35,7 @@ interface SearchFilterChipProps {
    * popper, `onToggle` ouvre la modale — pas d'aria-pressed ni de pastille de sélection.
    */
   dialogTrigger?: boolean
-  /** Notifie l'ouverture/fermeture du dropdown (télémétrie « ouvert sans application »). */
+  /** Notifie l'ouverture/fermeture du dropdown (télémétrie search_filter_opened à l'ouverture). */
   onOpenChange?: (open: boolean) => void
 }
 

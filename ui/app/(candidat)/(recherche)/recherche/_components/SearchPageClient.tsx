@@ -93,6 +93,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     setSearchFieldActive(false)
   }
 
+  // search_filter_opened (mobile) : émis au clic sur le bouton « Filtres » qui ouvre le panneau.
+  // Le panneau regroupe tous les filtres (sections toujours dépliées) → filter_name « all_filters ».
+  const openFiltersPanel = () => {
+    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_FILTER_OPENED, filter_name: "all_filters", search_engine: SEARCH_ENGINES.BETA })
+    setPanel("filters")
+  }
+
   // Bandeau desktop collé ou non : sentinelle observée juste au-dessus du sticky — dès
   // qu'elle sort du viewport par le haut, le bandeau est collé (fond blanc pleine largeur).
   const [isStuck, setIsStuck] = useState(false)
@@ -414,7 +421,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               params={params}
               activeFilterCount={activeFilterCount}
               onOpenSearch={() => setPanel("search")}
-              onOpenFilters={() => setPanel("filters")}
+              onOpenFilters={openFiltersPanel}
               onOpenTri={() => setPanel("tri")}
             />
           </Box>

@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { MATOMO_EVENTS, pushMatomoEvent } from "./matomo-utils"
+
+const config = vi.hoisted(() => ({ env: "local" }))
+vi.mock("@/config.public", () => ({ publicConfig: config }))
 
 describe("pushMatomoEvent", () => {
   // Vérifié par `yarn typecheck` : une directive @ts-expect-error devenue inutile fait échouer tsc.
@@ -12,5 +15,31 @@ describe("pushMatomoEvent", () => {
     const valid = () => pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_LAUNCHED })
 
     expect([literal, wide, valid]).toHaveLength(3)
+  })
+})
+
+describe("pushMatomoEvent, affichage en console", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  const push = (env: string) => {
+    config.env = env
+    vi.stubGlobal("window", {})
+    const info = vi.spyOn(console, "info").mockImplementation(() => undefined)
+    const event = { event: MATOMO_EVENTS.SEARCH_FILTER_OPENED, filter_name: "all_filters" }
+    pushMatomoEvent(event)
+    return { info, event }
+  }
+
+  it.each(["local", "preview"])("affiche l'événement en %s, où aucun conteneur ne l'envoie", (env) => {
+    const { info, event } = push(env)
+
+    expect(info).toHaveBeenCalledWith("[matomo] search_filter_opened", event)
+  })
+
+  it.each(["recette", "pentest", "production"])("n'affiche rien en %s", (env) => {
+    expect(push(env).info).not.toHaveBeenCalled()
   })
 })
