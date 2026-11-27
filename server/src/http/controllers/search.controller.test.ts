@@ -540,16 +540,18 @@ describe("search.controller", () => {
 
   // Collection interrogée par mode (#5389) : espionnée sur getDbCollection, sans dépendre de mongot.
   describe("corpus interrogé selon le mode", () => {
-    const collectionsQueried = async (path: string) => {
+    const allCollectionsQueried = async (path: string) => {
       const spy = vi.spyOn(mongodbUtils, "getDbCollection")
       try {
         const response = await httpClient().inject({ method: "GET", path })
         expect(response.statusCode).toBe(200)
-        return new Set(spy.mock.calls.map(([name]) => name).filter((name) => name.startsWith("search_") && name !== "search_queries" && name !== "search_suggestions"))
+        return spy.mock.calls.map(([name]) => name)
       } finally {
         spy.mockRestore()
       }
     }
+    const collectionsQueried = async (path: string) =>
+      new Set((await allCollectionsQueried(path)).filter((name) => name.startsWith("search_") && name !== "search_queries" && name !== "search_suggestions"))
 
     it.each([
       ["/api/v1/search", "search_jobs"],
@@ -566,6 +568,16 @@ describe("search.controller", () => {
       ["/api/v1/search/suggest?q=boulanger&mode=emplois_formation", "search_jobs_with_training"],
     ])("%s → %s uniquement", async (path, collection) => {
       expect([...(await collectionsQueried(path))]).toEqual([collection])
+    })
+
+    // Emplois avec formation incluse : un terme appris des recherches peut n'avoir aucune offre du mode (#6055).
+    it.each([
+      ["/api/v1/search/suggest?q=boulanger", true],
+      ["/api/v1/search/suggest?q=boulanger&mode=emplois", true],
+      ["/api/v1/search/suggest?q=boulanger&mode=formations", true],
+      ["/api/v1/search/suggest?q=boulanger&mode=emplois_formation", false],
+    ])("%s → suggestions apprises interrogées : %s", async (path, expected) => {
+      expect((await allCollectionsQueried(path)).includes("search_suggestions")).toBe(expected)
     })
 
     it("refuse un mode inconnu sur le suggest", async () => {

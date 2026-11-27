@@ -5,7 +5,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
-import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
+import { type SearchMode, searchItems, suggestSearchTerms } from "@/services/search/search.service"
 import { getSearchCorpusCollection, resetRomeLabelByCodeCache } from "@/services/search/search-items.service"
 
 /**
@@ -690,6 +690,11 @@ const USER_SUGGESTIONS = [
   suggestionFixture("Boulangerie industrielle", "disabled"),
   suggestionFixture("Vendeur en boulangerie", "active"),
   suggestionFixture("BTS digitalisation relation client", "active", "formation"),
+  // Mode emplois_formation (#6055) : terme sans offre du mode, terme trouvé par les seuls
+  // mots-clés d'une offre du mode, terme identique à un rome_label d'une offre du mode.
+  suggestionFixture("Auxiliaire de puériculture", "active"),
+  suggestionFixture("Travaux de chantier", "active"),
+  suggestionFixture("Conduite de travaux du BTP et de travaux paysagers", "active"),
 ]
 
 // Chaque document va dans la collection de son mode, comme la double écriture (upsertSearchItem).
@@ -1157,6 +1162,23 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(emplois.suggestions).toEqual([])
       expect(formations.suggestions).toEqual(["BTS Négociation et digitalisation de la relation client", "BTS digitalisation relation client"])
+    })
+
+    it("suggest emplois_formation : seuls les intitulés du corpus du mode, aucun terme appris des recherches", async () => {
+      const suggest = async (q: string, mode: SearchMode) => (await suggestSearchTerms({ q, limit: 8, mode })).suggestions
+
+      expect(await search({ q: "auxiliaire de puériculture", mode: "emplois_formation" })).toMatchObject({ nbHits: 0 })
+      expect(await suggest("puéricult", "emplois")).toEqual(["Auxiliaire de puériculture"])
+      expect(await suggest("puéricult", "formations")).toEqual(["Auxiliaire de puériculture"])
+      expect(await suggest("puéricult", "emplois_formation")).toEqual([])
+
+      // Perte assumée : un terme appris que le mode ne trouve que par les mots-clés n'est plus suggéré.
+      expect(ids(await search({ q: "travaux de chantier", mode: "emplois_formation" }))).toContain("offre-travaux-cfa")
+      expect(await suggest("travaux de chantier", "emplois")).toEqual(["Travaux de chantier"])
+      expect(await suggest("travaux de chantier", "emplois_formation")).toEqual([])
+
+      expect(await suggest("conduite de travaux", "emplois_formation")).toEqual(["Conduite de travaux du BTP et de travaux paysagers"])
+      expect(await suggest("conducteur de travaux", "emplois_formation")).toEqual(["Conducteur de travaux avec formation incluse"])
     })
 
     it("formations : mots de diplôme en qualificatifs, « bac pro vente » ne ramène pas « Bac pro cuisine »", async () => {
