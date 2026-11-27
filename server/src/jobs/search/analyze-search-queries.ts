@@ -113,16 +113,17 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
     .toArray()
 }
 
-// Suggestions et synonymes servent tous les modes : un candidat se juge sur l'ensemble des corpus.
+// Un candidat se juge sur l'ensemble des corpus : intitulés de chaque mode et suggestions apprises sans filtre de mode.
 const SEARCH_MODES: SearchMode[] = ["emplois", "emplois_formation", "formations"]
 
 /** Le candidat est-il déjà couvert par l'autocomplete existant (title/rome_labels + suggestions actives) ? */
 async function isAlreadySuggested(stats: IQueryStats): Promise<boolean> {
-  // Suggestions apprises interrogées à part : un mode peut ne pas les servir, ou les évincer
-  // derrière ses intitulés à `limit` (cf. UserSuggestionsPolicy).
+  // Suggestions apprises interrogées à part : un mode peut ne pas les servir (cf. UserSuggestionsPolicy)
+  // ou les évincer derrière ses intitulés à `limit` (cf. suggestSearchTerms). Pas de repli sur une
+  // liste vide : l'anti-doublon perdrait les termes appris sans signal, le run échoue.
   const [results, learned] = await Promise.all([
     Promise.all(SEARCH_MODES.map((mode) => suggestSearchTerms({ q: stats.top_raw_q, limit: 5, mode }))),
-    suggestLearnedTerms(stats.top_raw_q, 5).catch(() => [] as string[]),
+    suggestLearnedTerms(stats.top_raw_q, 5),
   ])
   return [...results.flatMap(({ suggestions }) => suggestions), ...learned].some((s) => {
     const normalized = normalizeQuery(s)

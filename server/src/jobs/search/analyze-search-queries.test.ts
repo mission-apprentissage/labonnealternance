@@ -174,7 +174,7 @@ describe("analyzeSearchQueries", () => {
     expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
   })
 
-  it("écarte un candidat couvert par une suggestion apprise que ne sert aucun mode", async () => {
+  it("écarte un candidat couvert par une suggestion apprise évincée par les intitulés dans tous les modes", async () => {
     await getDbCollection("search_queries").insertMany(queryLogs("boulanger", { total: 40, nbHits: 50 }))
     vi.mocked(suggestLearnedTerms).mockResolvedValueOnce(["Boulanger pâtissier"])
 
@@ -182,6 +182,15 @@ describe("analyzeSearchQueries", () => {
 
     expect(await getDbCollection("search_suggestions").findOne({ term: "boulanger" })).toMatchObject({ status: "rejected", rejection_reason: "already_suggested" })
     expect(sendMistralBatch).not.toHaveBeenCalled()
+  })
+
+  it("échoue sans appeler Mistral quand les suggestions apprises ne répondent pas", async () => {
+    await getDbCollection("search_queries").insertMany(queryLogs("boulanger", { total: 40, nbHits: 50 }))
+    vi.mocked(suggestLearnedTerms).mockRejectedValueOnce(new Error("search_suggestions_index indisponible"))
+
+    await expect(analyzeSearchQueries()).rejects.toThrow("search_suggestions_index indisponible")
+    expect(sendMistralBatch).not.toHaveBeenCalled()
+    expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
   })
 
   it("compte les recherches du canal site et celles sans canal", async () => {

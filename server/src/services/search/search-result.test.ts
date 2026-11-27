@@ -5,7 +5,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
-import { type SearchMode, searchItems, suggestSearchTerms } from "@/services/search/search.service"
+import { type SearchMode, searchItems, suggestLearnedTerms, suggestSearchTerms } from "@/services/search/search.service"
 import { getSearchCorpusCollection, resetRomeLabelByCodeCache } from "@/services/search/search-items.service"
 
 /**
@@ -690,8 +690,8 @@ const USER_SUGGESTIONS = [
   suggestionFixture("Boulangerie industrielle", "disabled"),
   suggestionFixture("Vendeur en boulangerie", "active"),
   suggestionFixture("BTS digitalisation relation client", "active", "formation"),
-  // Mode emplois_formation (#6055) : terme sans offre du mode, terme trouvé par les seuls
-  // mots-clés d'une offre du mode, terme identique à un rome_label d'une offre du mode.
+  // Mode emplois_formation (#6055) : terme sans offre du mode, terme que le mode trouve mais qui ne
+  // préfixe aucun intitulé, terme identique à un rome_label d'une offre du mode.
   suggestionFixture("Auxiliaire de puériculture", "active"),
   suggestionFixture("Travaux de chantier", "active"),
   suggestionFixture("Conduite de travaux du BTP et de travaux paysagers", "active"),
@@ -1172,7 +1172,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(await suggest("puéricult", "formations")).toEqual(["Auxiliaire de puériculture"])
       expect(await suggest("puéricult", "emplois_formation")).toEqual([])
 
-      // Perte assumée : un terme appris que le mode ne trouve que par les mots-clés n'est pas suggéré.
+      // Perte assumée : un terme appris que le mode trouve mais qui ne préfixe aucun intitulé n'est pas suggéré.
       expect(ids(await search({ q: "travaux de chantier", mode: "emplois_formation" }))).toContain("offre-travaux-cfa")
       expect(await suggest("travaux de chantier", "emplois")).toEqual(["Travaux de chantier"])
       expect(await suggest("travaux de chantier", "emplois_formation")).toEqual([])
@@ -1374,6 +1374,14 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       const fromUsers = suggestions.indexOf("Boulangerie artisanale")
       expect(fromItems).toBeGreaterThanOrEqual(0)
       expect(fromUsers).toBeGreaterThan(fromItems)
+    })
+
+    it("anti-doublon du job : toutes les suggestions actives, quelle que soit la catégorie ou le corpus", async () => {
+      expect(await suggestLearnedTerms("digitalisation", 5)).toEqual(["BTS digitalisation relation client"])
+      expect(await suggestLearnedTerms("puéricult", 5)).toEqual(["Auxiliaire de puériculture"])
+      const boulangerie = await suggestLearnedTerms("boulangerie", 5)
+      expect(boulangerie).toContain("Boulangerie artisanale")
+      expect(boulangerie).not.toContain("Boulangerie industrielle")
     })
 
     it("déduplique une suggestion apprise identique à un intitulé indexé", async () => {
