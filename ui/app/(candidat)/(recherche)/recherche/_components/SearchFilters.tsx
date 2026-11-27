@@ -6,7 +6,7 @@ import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import type { ReactNode } from "react"
-import { useMemo, useRef } from "react"
+import { useMemo } from "react"
 
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
@@ -157,24 +157,13 @@ function MobileSection({ title, children }: { title?: string; children: ReactNod
 }
 
 export function SearchFilters({ params, facets, counts, nbHits, onNavigate, variant = "bar", onClose }: SearchFiltersProps) {
-  // search_filter_opened : dropdown ouvert puis refermé SANS application.
-  // `navigate` marque le dropdown ouvert comme « appliqué » ; la fermeture sans application émet l'événement.
-  const openDropdownRef = useRef<{ filterName: string; applied: boolean } | null>(null)
+  // search_filter_opened : émis à l'ouverture du dropdown, qu'un filtre soit appliqué ensuite ou non
+  // (même règle que le bouton « Filtres » mobile, cf. SearchPageClient). Rien à la fermeture.
   const trackDropdown = (filterName: string) => (open: boolean) => {
-    if (open) {
-      openDropdownRef.current = { filterName, applied: false }
-      return
-    }
-    if (openDropdownRef.current?.filterName === filterName && !openDropdownRef.current.applied) {
-      pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_FILTER_OPENED, filter_name: filterName, search_engine: SEARCH_ENGINES.BETA })
-    }
-    openDropdownRef.current = null
+    if (open) pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_FILTER_OPENED, filter_name: filterName, search_engine: SEARCH_ENGINES.BETA })
   }
 
-  const navigate = (patch: Partial<ISearchPageParams>) => {
-    if (openDropdownRef.current) openDropdownRef.current.applied = true
-    onNavigate({ ...params, ...patch, page: 0 })
-  }
+  const navigate = (patch: Partial<ISearchPageParams>) => onNavigate({ ...params, ...patch, page: 0 })
 
   const contractOptions = useMemo(
     () => buildOptionValues(facets?.contract_type, params.contract_type).sort((a, b) => a.localeCompare(b, "fr")),
@@ -267,7 +256,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
         nativeInputProps={{
           type: "date",
           defaultValue: params.start_date ?? "",
-          // Sans changement, pas de navigation : elle marquerait le panneau « appliqué » (search_filter_opened).
+          // Sans changement, pas de navigation (ni recherche relancée pour rien).
           onBlur: (e) => {
             const value = e.target.value || undefined
             if (value !== params.start_date) setStartDate(value)
