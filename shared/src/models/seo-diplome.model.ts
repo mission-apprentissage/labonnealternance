@@ -10,7 +10,8 @@ const ZSeoDiplomeKpis = z.object({
   duration: z.string(),
   entreprises: z.number(),
   offres: z.number(),
-  salaire: z.string(),
+  // Absent : l'ui affiche la fourchette légale apprenti calculée depuis le SMIC (cf. FOURCHETTE_SALAIRE_APPRENTISSAGE).
+  salaire: z.string().nullish(),
 })
 
 const ZSeoDiplomeProgrammeSections = z.object({

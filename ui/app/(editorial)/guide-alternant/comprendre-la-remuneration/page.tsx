@@ -14,6 +14,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { DATE_EFFET_SMIC, formatMontantSmicMensuel, SMIC_HORAIRE_BRUT } from "@/utils/smic.utils"
 
 const remunerationPage = PAGES.static.guideAlternantComprendreLaRemuneration
 
@@ -23,17 +24,15 @@ export const metadata: Metadata = METADATA.static.guideAlternantComprendreLaRemu
 const FAQ_ITEMS = [
   {
     question: "Quel est le salaire minimum d'un alternant en 2026 ?",
-    answer:
-      "En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.",
+    answer: `En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (${formatMontantSmicMensuel(27)} brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (${formatMontantSmicMensuel(100)}) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.`,
   },
   {
     question: "Quel est le SMIC applicable en 2026 ?",
-    answer: "Depuis le 1er juin 2026, le SMIC s'élève à 1 867,02 € brut par mois, soit 12,31 € brut de l'heure. C'est la base de calcul de la rémunération minimale en alternance.",
+    answer: `Depuis le ${DATE_EFFET_SMIC}, le SMIC s'élève à ${formatMontantSmicMensuel(100)} brut par mois, soit ${SMIC_HORAIRE_BRUT} brut de l'heure. C'est la base de calcul de la rémunération minimale en alternance.`,
   },
   {
     question: "Le salaire net d'un alternant a-t-il baissé depuis mars 2025 ?",
-    answer:
-      "Oui, pour les contrats d'apprentissage conclus depuis le 1er mars 2025, le seuil d'exonération de cotisations est passé de 79 % à 50 % du SMIC (933,51 €). Au-delà de ce seuil, la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassante, ce qui fait décrocher le net du brut sur les rémunérations les plus élevées.",
+    answer: `Oui, pour les contrats d'apprentissage conclus depuis le 1er mars 2025, le seuil d'exonération de cotisations est passé de 79 % à 50 % du SMIC (${formatMontantSmicMensuel(50)}). Au-delà de ce seuil, la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassante, ce qui fait décrocher le net du brut sur les rémunérations les plus élevées.`,
   },
   {
     question: "Combien gagne un alternant en BTS, en licence ou en master ?",
@@ -82,19 +81,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            27 % — 504,10 €
+            27 % — {formatMontantSmicMensuel(27)}
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            39 % — 728,14 €
+            39 % — {formatMontantSmicMensuel(39)}
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            55 % — 1 026,86 €
+            55 % — {formatMontantSmicMensuel(55)}
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -118,19 +117,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            43 % — 802,82 €
+            43 % — {formatMontantSmicMensuel(43)}
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            51 % — 952,18 €
+            51 % — {formatMontantSmicMensuel(51)}
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            67 % — 1 250,90 €
+            67 % — {formatMontantSmicMensuel(67)}
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -154,19 +153,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            53 %* — 989,52 €
+            53 %* — {formatMontantSmicMensuel(53)}
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            61 %* — 1 138,88 €
+            61 %* — {formatMontantSmicMensuel(61)}
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            78 %* — 1 456,28 €
+            78 %* — {formatMontantSmicMensuel(78)}
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -190,19 +189,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100 %* — 1 867,02 €
+            100 %* — {formatMontantSmicMensuel(100)}
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100 %* — 1 867,02 €
+            100 %* — {formatMontantSmicMensuel(100)}
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100 %* — 1 867,02 €
+            100 %* — {formatMontantSmicMensuel(100)}
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -231,19 +230,19 @@ const BlocSalaireProfessionalisation = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            55 % — 1 026,86 €
+            55 % — {formatMontantSmicMensuel(55)}
           </Typography>{" "}
           pour les moins de 21 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            70 % — 1 306,91 €
+            70 % — {formatMontantSmicMensuel(70)}
           </Typography>{" "}
           de 21 à 25 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100 % — 1 867,02 €
+            100 % — {formatMontantSmicMensuel(100)}
           </Typography>{" "}
           SMIC ou 85 % SMC* pour les 26 ans et plus
         </ListItem>
@@ -267,19 +266,19 @@ const BlocSalaireProfessionalisation = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            65 % — 1 213,56 €
+            65 % — {formatMontantSmicMensuel(65)}
           </Typography>{" "}
           pour les moins de 21 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            80 % — 1 493,62 €
+            80 % — {formatMontantSmicMensuel(80)}
           </Typography>{" "}
           de 21 à 25 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100 % — 1 867,02 €
+            100 % — {formatMontantSmicMensuel(100)}
           </Typography>{" "}
           SMIC ou 85 % SMC* pour les 26 ans et plus
         </ListItem>
@@ -292,7 +291,7 @@ const ComprendreLaRemunerationPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantComprendreLaRemuneration]
 
   const descriptionParts = [
-    "En 2026, le salaire en alternance varie de 27 % à 100 % du SMIC, soit de 504 € à 1 867 € brut par mois, selon l'âge, l'année de contrat et le type de contrat (apprentissage ou professionnalisation).",
+    `En 2026, le salaire en alternance varie de 27 % à 100 % du SMIC, soit de ${formatMontantSmicMensuel(27, { arrondi: true })} à ${formatMontantSmicMensuel(100, { arrondi: true })} brut par mois, selon l'âge, l'année de contrat et le type de contrat (apprentissage ou professionnalisation).`,
     "Vous vous lancez dans l'alternance et vous vous demandez combien vous allez gagner ? La rémunération en alternance dépend de plusieurs facteurs : le type de contrat (apprentissage ou professionnalisation), votre âge, votre année de formation et parfois votre niveau de diplôme. Ce guide complet vous présente tous les barèmes de salaire en vigueur en 2026.",
   ]
 
@@ -441,11 +440,11 @@ const ComprendreLaRemunerationPage = () => {
       <Section title="Salaire en contrat de professionnalisation en 2026">
         <Paragraph>
           Le contrat de professionnalisation offre une rémunération différente, basée sur l'âge du bénéficiaire et son niveau de formation initial au début du contrat. La
-          rémunération minimale s'élève à 55 % du SMIC pour les moins de 21 ans sans qualification. La rémunération ne peut pas être inférieure au SMIC (1 867,02 € brut depuis le
-          1er juin 2026) ni à 85 % du salaire minimum conventionnel de branche.
+          rémunération minimale s'élève à 55 % du SMIC pour les moins de 21 ans sans qualification. La rémunération ne peut pas être inférieure au SMIC (
+          {formatMontantSmicMensuel(100)} brut depuis le {DATE_EFFET_SMIC}) ni à 85 % du salaire minimum conventionnel de branche.
         </Paragraph>
         <BlocSalaireProfessionalisation />
-        <Paragraph>*La rémunération ne peut pas être inférieure au SMIC (1 867,02 €) ni à 85 % du salaire minimum conventionnel de branche (SMC)</Paragraph>
+        <Paragraph>*La rémunération ne peut pas être inférieure au SMIC ({formatMontantSmicMensuel(100)}) ni à 85 % du salaire minimum conventionnel de branche (SMC)</Paragraph>
       </Section>
       <Section title="Salaire brut et salaire net en alternance">
         <Paragraph>Le salaire net perçu par l'alternant varie selon le type de contrat en raison d'exonérations spécifiques.</Paragraph>
@@ -457,14 +456,14 @@ const ComprendreLaRemunerationPage = () => {
           à 79 % du SMIC.
         </Paragraph>
         <Paragraph>
-          Pour les contrats conclus à partir du 1er mars 2025 : le seuil d'exonération est abaissé à 50 % du SMIC (933,51 € brut depuis le 1er juin 2026). Au-delà de ce seuil, les
-          cotisations sociales s'appliquent.
+          Pour les contrats conclus à partir du 1er mars 2025 : le seuil d'exonération est abaissé à 50 % du SMIC ({formatMontantSmicMensuel(50)} brut depuis le {DATE_EFFET_SMIC}).
+          Au-delà de ce seuil, les cotisations sociales s'appliquent.
         </Paragraph>
         <Paragraph>Concrètement :</Paragraph>
         <ParagraphList
           listItems={[
-            "Rémunération ≤ 50 % du SMIC (933,51 €, contrats depuis mars 2025) : le salaire net est quasiment égal au salaire brut",
-            "Rémunération > 50 % du SMIC (contrats depuis mars 2025) : la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassant 933,51 €, ce qui fait décrocher le net du brut sur les tranches les plus hautes",
+            `Rémunération ≤ 50 % du SMIC (${formatMontantSmicMensuel(50)}, contrats depuis mars 2025) : le salaire net est quasiment égal au salaire brut`,
+            `Rémunération > 50 % du SMIC (contrats depuis mars 2025) : la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassant ${formatMontantSmicMensuel(50)}, ce qui fait décrocher le net du brut sur les tranches les plus hautes`,
           ]}
         />
         <Paragraph>
@@ -515,14 +514,15 @@ const ComprendreLaRemunerationPage = () => {
           Quel est le salaire minimum d'un alternant en 2026 ?
         </Paragraph>
         <Paragraph>
-          En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02
-          €) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.
+          En contrat d'apprentissage, la rémunération varie de 27 % du SMIC ({formatMontantSmicMensuel(27)} brut par mois pour un apprenti de moins de 18 ans en première année) à
+          100 % du SMIC ({formatMontantSmicMensuel(100)}) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans
+          qualification.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Quel est le SMIC applicable en 2026 ?
         </Paragraph>
         <Paragraph>
-          Depuis le 1er juin 2026, le SMIC s'élève à 1 867,02 € brut par mois, soit 12,31 € brut de l'heure (
+          Depuis le {DATE_EFFET_SMIC}, le SMIC s'élève à {formatMontantSmicMensuel(100)} brut par mois, soit {SMIC_HORAIRE_BRUT} brut de l'heure (
           <DsfrLink href={"https://travail-emploi.gouv.fr/le-smic-salaire-minimum-de-croissance"}>service-public.gouv.fr</DsfrLink>
           ). C'est la base de calcul de la rémunération minimale en alternance.
         </Paragraph>
@@ -530,8 +530,9 @@ const ComprendreLaRemunerationPage = () => {
           Le salaire net d'un alternant a-t-il baissé depuis mars 2025 ?
         </Paragraph>
         <Paragraph>
-          Oui, pour les contrats d'apprentissage conclus depuis le 1er mars 2025, le seuil d'exonération de cotisations est passé de 79 % à 50 % du SMIC (933,51 €). Au-delà de ce
-          seuil, la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassante, ce qui fait décrocher le net du brut sur les rémunérations les plus élevées.
+          Oui, pour les contrats d'apprentissage conclus depuis le 1er mars 2025, le seuil d'exonération de cotisations est passé de 79 % à 50 % du SMIC (
+          {formatMontantSmicMensuel(50)}). Au-delà de ce seuil, la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassante, ce qui fait décrocher le net du brut sur les
+          rémunérations les plus élevées.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Combien gagne un alternant en BTS, en licence ou en master ?

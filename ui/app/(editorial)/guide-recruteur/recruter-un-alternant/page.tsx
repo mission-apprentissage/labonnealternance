@@ -23,6 +23,7 @@ import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { getSession } from "@/utils/get-session"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { DATE_EFFET_SMIC, formatMontantSmicMensuel } from "@/utils/smic.utils"
 export const metadata: Metadata = METADATA.static.guideRecruteurRecruterUnAlternant()
 
 const faqItems: { question: string; answer: string; answerNode?: ReactNode; link?: { href: string; label: string } }[] = [
@@ -33,8 +34,7 @@ const faqItems: { question: string; answer: string; answerNode?: ReactNode; link
   },
   {
     question: "Combien coûte un apprenti pour l'employeur ?",
-    answer:
-      "La rémunération légale d'un apprenti va de 27 % du SMIC (moins de 18 ans, 1re année) à 100 % du SMIC (26 ans et plus), soit d'environ 504 € à 1 867 € brut par mois sur la base du SMIC en vigueur (1 867,02 € au 1er juin 2026). Le coût réel est nettement réduit la première année grâce à l'aide à l'embauche (jusqu'à 5 000 €), et le salaire de l'apprenti est exonéré de cotisations salariales jusqu'à 50 % du SMIC (933,51 € au 1er juin 2026). Pour une estimation précise du coût net, utilisez le simulateur de l'URSSAF.",
+    answer: `La rémunération légale d'un apprenti va de 27 % du SMIC (moins de 18 ans, 1re année) à 100 % du SMIC (26 ans et plus), soit d'environ ${formatMontantSmicMensuel(27, { arrondi: true })} à ${formatMontantSmicMensuel(100, { arrondi: true })} brut par mois sur la base du SMIC en vigueur (${formatMontantSmicMensuel(100)} au ${DATE_EFFET_SMIC}). Le coût réel est nettement réduit la première année grâce à l'aide à l'embauche (jusqu'à 5 000 €), et le salaire de l'apprenti est exonéré de cotisations salariales jusqu'à 50 % du SMIC (${formatMontantSmicMensuel(50)} au ${DATE_EFFET_SMIC}). Pour une estimation précise du coût net, utilisez le simulateur de l'URSSAF.`,
     link: {
       href: "https://www.urssaf.fr/accueil/outils-documentation/simulateurs/cotisations-employeur.html",
       label: "Simulateur de coût employeur de l'URSSAF",
@@ -234,15 +234,35 @@ const RecruterUnAlternantPage = () => {
           rowHeader
           headers={["Âge de l'apprenti", "1re année", "2e année", "3e année"]}
           data={[
-            ["Moins de 18 ans", "27 % — 504 €", "39 % — 728 €", "55 % — 1 027 €"],
-            ["18 à 20 ans", "43 % — 803 €", "51 % — 952 €", "67 % — 1 251 €"],
-            ["21 à 25 ans", "53 % — 990 €", "61 % — 1 139 €", "78 % — 1 456 €"],
-            ["26 ans et plus", "100 % — 1 867 €", "100 % — 1 867 €", "100 % — 1 867 €"],
+            [
+              "Moins de 18 ans",
+              `27 % — ${formatMontantSmicMensuel(27, { arrondi: true })}`,
+              `39 % — ${formatMontantSmicMensuel(39, { arrondi: true })}`,
+              `55 % — ${formatMontantSmicMensuel(55, { arrondi: true })}`,
+            ],
+            [
+              "18 à 20 ans",
+              `43 % — ${formatMontantSmicMensuel(43, { arrondi: true })}`,
+              `51 % — ${formatMontantSmicMensuel(51, { arrondi: true })}`,
+              `67 % — ${formatMontantSmicMensuel(67, { arrondi: true })}`,
+            ],
+            [
+              "21 à 25 ans",
+              `53 % — ${formatMontantSmicMensuel(53, { arrondi: true })}`,
+              `61 % — ${formatMontantSmicMensuel(61, { arrondi: true })}`,
+              `78 % — ${formatMontantSmicMensuel(78, { arrondi: true })}`,
+            ],
+            [
+              "26 ans et plus",
+              `100 % — ${formatMontantSmicMensuel(100, { arrondi: true })}`,
+              `100 % — ${formatMontantSmicMensuel(100, { arrondi: true })}`,
+              `100 % — ${formatMontantSmicMensuel(100, { arrondi: true })}`,
+            ],
           ]}
         />
         <Paragraph variant="body2" color={fr.colors.decisions.text.mention.grey.default}>
-          Pourcentages du SMIC en vigueur (1 867,02 € brut/mois au 1er juin 2026). Pour les 21 ans et plus, la rémunération peut être relevée au SMIC ou au minimum conventionnel
-          lorsqu'il est plus favorable. Source :{" "}
+          Pourcentages du SMIC en vigueur ({formatMontantSmicMensuel(100)} brut/mois au {DATE_EFFET_SMIC}). Pour les 21 ans et plus, la rémunération peut être relevée au SMIC ou au
+          minimum conventionnel lorsqu'il est plus favorable. Source :{" "}
           <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/F2918" size="sm">
             service-public.fr
           </DsfrLink>
@@ -250,8 +270,8 @@ const RecruterUnAlternantPage = () => {
         </Paragraph>
         <Paragraph>
           Le <strong>coût réel</strong> est inférieur à ce salaire brut : la première année, l'aide à l'embauche (jusqu'à 5 000 €) vient en déduction, et la rémunération de
-          l'apprenti est exonérée de cotisations salariales jusqu'à 50 % du SMIC (soit 933,51 € au 1er juin 2026), si bien que le salaire net reste proche du brut sous ce seuil.
-          Pour estimer précisément le reste à charge, utilisez le{" "}
+          l'apprenti est exonérée de cotisations salariales jusqu'à 50 % du SMIC (soit {formatMontantSmicMensuel(50)} au {DATE_EFFET_SMIC}), si bien que le salaire net reste proche
+          du brut sous ce seuil. Pour estimer précisément le reste à charge, utilisez le{" "}
           <DsfrLink href="https://www.urssaf.fr/accueil/outils-documentation/simulateurs/cotisations-employeur.html">simulateur employeur de l'URSSAF</DsfrLink> ou notre{" "}
           <DsfrLink href={PAGES.static.salaireAlternant.getPath()}>simulateur de salaire en alternance</DsfrLink>.
         </Paragraph>

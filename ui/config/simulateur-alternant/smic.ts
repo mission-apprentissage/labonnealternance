@@ -2,35 +2,39 @@
  * Valeurs du SMIC exprimées en euros
  * Source : https://www.service-public.gouv.fr/particuliers/vosdroits/F2300
  */
-const SMIC_HORAIRE_BRUT: number = 12.31
-const SMIC_MENSUEL_BRUT: number = 1867.02
-const SMIC_HORAIRE_NET: number = 9.74
-const SMIC_MENSUEL_NET: number = 1477.93
+type MontantsSmic = {
+  brut: { horaire: number; mensuel: number }
+  net: { horaire: number; mensuel: number }
+}
 
-const SMIC_HORAIRE_BRUT_MAYOTTE: number = 9.56
-const SMIC_MENSUEL_BRUT_MAYOTTE: number = 1449.93
-const SMIC_HORAIRE_NET_MAYOTTE: number = 8.53
-const SMIC_MENSUEL_NET_MAYOTTE: number = 1293.97
+type BaremeSmic = {
+  dateEffet: Date
+  metropole: MontantsSmic
+  mayotte: MontantsSmic
+}
 
-export const SMIC = {
+// Barème précédent, à supprimer à la prochaine revalorisation.
+const SMIC_2026_06_01: BaremeSmic = {
+  dateEffet: new Date("2026-06-01T00:00:00"),
   metropole: {
-    brut: {
-      horaire: SMIC_HORAIRE_BRUT,
-      mensuel: SMIC_MENSUEL_BRUT,
-    },
-    net: {
-      horaire: SMIC_HORAIRE_NET,
-      mensuel: SMIC_MENSUEL_NET,
-    },
+    brut: { horaire: 12.31, mensuel: 1867.02 },
+    net: { horaire: 9.74, mensuel: 1477.93 },
   },
   mayotte: {
-    brut: {
-      horaire: SMIC_HORAIRE_BRUT_MAYOTTE,
-      mensuel: SMIC_MENSUEL_BRUT_MAYOTTE,
-    },
-    net: {
-      horaire: SMIC_HORAIRE_NET_MAYOTTE,
-      mensuel: SMIC_MENSUEL_NET_MAYOTTE,
-    },
+    brut: { horaire: 9.56, mensuel: 1449.93 },
+    net: { horaire: 8.53, mensuel: 1293.97 },
   },
 }
+
+// Métropole : +1,6 % annoncé par le gouvernement (https://www.info.gouv.fr/actualite/conference-sociale-hausse-du-smic-de-1-6), à confirmer par le décret au JO (#5953).
+// Mayotte : montants du 1er juin 2026 reconduits tant que la nouvelle valeur n'est pas publiée.
+const SMIC_2026_12_01: BaremeSmic = {
+  dateEffet: new Date("2026-12-01T00:00:00"),
+  metropole: {
+    brut: { horaire: 12.51, mensuel: 1897.39 },
+    net: { horaire: 9.9, mensuel: 1501.6 },
+  },
+  mayotte: SMIC_2026_06_01.mayotte,
+}
+
+export const SMIC: BaremeSmic = SMIC_2026_12_01
