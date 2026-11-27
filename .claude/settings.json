@@ -1,0 +1,51 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" ] || exit 0; exec bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" session-start",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" ] || exit 0; exec bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" post-edit",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" ] || exit 0; exec bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" stop",
+            "timeout": 300,
+            "statusMessage": "Vérification avant de rendre la main"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" ] || exit 0; exec bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/run.sh\" stop",
+            "timeout": 300,
+            "statusMessage": "Vérification du worktree du sous-agent"
+          }
+        ]
+      }
+    ]
+  }
+}
