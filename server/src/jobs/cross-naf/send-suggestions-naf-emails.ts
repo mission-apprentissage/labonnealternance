@@ -4,6 +4,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 
 import { logger } from "@/common/logger"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
@@ -21,8 +22,6 @@ const UTM_CAMPAIGNS = {
   offre: "2610_lba_candidats_suggestions-emploi-autres-naf-offre",
   recherche: "2610_lba_candidats_suggestions-emploi-autres-naf-recherche",
 } as const
-
-const imagePath = `${config.publicUrl}/images/emails/`
 
 const withUtm = (url: string, link: keyof typeof UTM_CAMPAIGNS) => {
   const taggedUrl = new URL(url)
@@ -64,7 +63,7 @@ export const buildSuggestionsNafEmail = (applicant: Pick<SuggestionsNafApplicant
   return {
     subject: `Votre métier ${target.rome_libelle} est recherché dans d'autres secteurs, tentez votre chance !`,
     data: {
-      images: { logoLba: `${imagePath}logo_LBA.png`, logoRf: `${imagePath}logo_rf.png` },
+      images: getEmailLogos(),
       publicEmail: config.publicEmail,
       firstname: applicant.firstname,
       source: { title: target.source_job.offer_title, company: getCompanyName(target.source_job), sector: target.source_job.workplace_naf_label },

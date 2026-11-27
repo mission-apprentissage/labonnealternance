@@ -22,6 +22,7 @@ import { FCGetOpcoInfos } from "@/common/apis/france-competences/france-competen
 import { REFERENTIEL_ORGANISMES_API_URL } from "@/common/apis/referentiel-organismes/referentiel-organismes.client"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getHttpClient } from "@/common/utils/http-utils"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mail-utils"
@@ -665,10 +666,7 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
     subject: "Confirmez votre adresse mail",
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: getEmailLogos(),
       last_name: sanitizeTextField(user.last_name),
       first_name: sanitizeTextField(user.first_name),
       confirmation_url: url,
@@ -699,7 +697,7 @@ export const sendEmailConfirmationEntreprise = async (userId: ObjectId, accessSt
       subject: "Confirmez votre adresse mail",
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
-        images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
+        images: getEmailLogos(),
         last_name: sanitizeTextField(user.last_name),
         first_name: sanitizeTextField(user.first_name),
         email: sanitizeTextField(user.email),
@@ -735,8 +733,7 @@ export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, typ
     data: {
       ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
       images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+        ...getEmailLogos(),
         logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
       },
       etablissement: {

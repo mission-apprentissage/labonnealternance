@@ -5,6 +5,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/role-management.mo
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
@@ -94,10 +95,7 @@ export const opcoReminderJob = async () => {
           subject: "Nouveaux comptes entreprises à valider",
           template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
           data: {
-            images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png`,
-              logoRf: `${config.publicUrl}/images/emails/logo_rf.png`,
-            },
+            images: getEmailLogos(),
             countPhrase,
             publicEmail: config.publicEmail,
             utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_opco_notif-comptes-a-valider",

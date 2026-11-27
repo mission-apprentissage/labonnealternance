@@ -14,6 +14,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/role-management.mo
 import type { IUserWithAccount, IUserWithAccountContactFields, IUserWithAccountFields } from "shared/models/user-with-account.model"
 import { getOfferApplyPhone, UserEventType } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
@@ -415,10 +416,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
     subject: "Bienvenue sur La bonne alternance",
     template: getStaticFilePath(!hasJobs && !isCfa ? "./templates/mail-bienvenue-entreprise-sans-offre.mjml.ejs" : "./templates/mail-bienvenue.mjml.ejs"),
     data: {
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: getEmailLogos(),
       last_name: sanitizeTextField(last_name),
       first_name: sanitizeTextField(first_name),
       confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),

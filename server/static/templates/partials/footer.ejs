@@ -1,7 +1,8 @@
 <%#
-  Pied de page : bloc « Ce courriel est généré automatiquement… » puis mentions légales.
+  Pied de page : logo numerique.gouv (PNG 2x, cf. partials/header), bloc « Ce courriel est généré automatiquement… »
+  puis mentions légales.
   Paramètres :
-  - data (data.publicEmail) ;
+  - data (data.publicEmail, data.images.logoNumeriqueGouv) ;
   - contactReason : phrase (ou liste de phrases) qui suit le paragraphe DGEFP, HTML brut ;
   - contact (défaut true) : false quand le template porte son propre bloc de contact ;
   - utm : query string sans « ? » ajoutée aux liens FAQ et politique de confidentialité ;
@@ -19,6 +20,14 @@
   const linkStyle = "text-decoration: underline; color: inherit;"
 %>
 <mj-spacer height="24px"></mj-spacer>
+<mj-section border-radius="0px" css-class="section">
+  <mj-group>
+    <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+      <mj-image align="right" alt="Un service proposé par numerique.gouv" css-class="image" height="60px" src="<%= data.images.logoNumeriqueGouv %>" width="180px"></mj-image>
+    </mj-column>
+  </mj-group>
+</mj-section>
+<mj-spacer height="16px"></mj-spacer>
 <% if (locals.contact !== false) { %>
 <mj-section border-radius="4px" css-class="section">
   <mj-group>

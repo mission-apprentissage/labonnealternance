@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 
 const site = "https://labonnealternance.apprentissage.beta.gouv.fr"
-const data = { publicEmail: "contact@exemple.fr", images: { logoRf: "rf.png", logoLba: "lba.png" } }
+const data = { publicEmail: "contact@exemple.fr", images: { logoRf: "rf.png", logoLba: "lba.png", logoNumeriqueGouv: "numerique-gouv.png" } }
 
 const renderPartial = (name: string, params: Record<string, unknown> = {}) =>
   new Promise<string>((resolve, reject) =>
@@ -24,6 +24,13 @@ describe("partial header", () => {
 })
 
 describe("partial footer", () => {
+  it("affiche le logo numerique.gouv avec son texte alternatif", async () => {
+    const html = await renderPartial("footer")
+
+    expect(html).toContain('alt="Un service proposé par numerique.gouv"')
+    expect(html).toContain('src="numerique-gouv.png"')
+  })
+
   it("rend les liens sans query string ni ancre par défaut", async () => {
     expect(hrefs(await renderPartial("footer"))).toEqual([
       `${site}/faq`,

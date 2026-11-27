@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
 
 import dayjs from "shared/helpers/dayjs"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
@@ -117,10 +118,7 @@ export default (server: Server) => {
               isAffelnet: true,
               url: config.publicUrl,
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
-              images: {
-                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-              },
+              images: getEmailLogos(),
               etablissement: {
                 email,
                 name: etablissement!.raison_sociale,
@@ -209,8 +207,7 @@ export default (server: Server) => {
               url: config.publicUrl,
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
-                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+                ...getEmailLogos(),
                 logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
                 optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
               },
@@ -275,10 +272,7 @@ export default (server: Server) => {
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isAffelnet: true,
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-          },
+          images: getEmailLogos(),
           etablissement: {
             name: etablissement.raison_sociale,
             formateur_address: etablissement.formateur_address,
@@ -339,10 +333,7 @@ export default (server: Server) => {
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isParcoursup: true,
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-          },
+          images: getEmailLogos(),
           etablissement: {
             name: etablissement.raison_sociale,
             formateur_address: etablissement.formateur_address,
@@ -388,10 +379,7 @@ export default (server: Server) => {
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: getStaticFilePath("./templates/mail-rdva-optout-unsubscription-question.mjml.ejs"),
           data: {
-            images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-            },
+            images: getEmailLogos(),
             etablissement: {
               name: etablissement.raison_sociale,
               formateur_address: etablissement.formateur_address,
@@ -426,10 +414,7 @@ export default (server: Server) => {
         subject: "Le formulaire de contact ne sera pas activé pour votre CFA sur La bonne alternance",
         template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
         data: {
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-          },
+          images: getEmailLogos(),
           etablissement: {
             name: etablissement!.raison_sociale,
             formateur_address: etablissement!.formateur_address,

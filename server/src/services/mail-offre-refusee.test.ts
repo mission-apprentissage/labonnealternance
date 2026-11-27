@@ -5,7 +5,11 @@ import mailer from "./mailer.service"
 
 const render = (data: { agent_note: string[][]; comment: string | null }) =>
   mailer.renderEmail(getStaticFilePath("./templates/mail-offre-refusee.mjml.ejs"), {
-    images: { logoLba: "https://exemple.fr/logo_LBA.png", logoRf: "https://exemple.fr/logo_rf.png" },
+    images: {
+      logoLba: "https://exemple.fr/logo_la_bonne_alternance.png",
+      logoRf: "https://exemple.fr/logo_republique_francaise.png",
+      logoNumeriqueGouv: "https://exemple.fr/logo_numerique_gouv.png",
+    },
     nom: "Martin",
     prenom: "Sylvie",
     date_depot: "01/10/2026",

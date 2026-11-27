@@ -4,14 +4,13 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { obfuscateLbaCompanyApplications } from "./application.service"
 import mailer from "./mailer.service"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
-
-const imagePath = `${config.publicUrl}/images/emails/`
 
 const ARBITRARY_COMPANY_LIMIT = 50
 
@@ -115,10 +114,7 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], { re
         subject: `Confirmation de déréférencement du service La bonne alternance`,
         template: getStaticFilePath("./templates/mail-desinscription-algo.mjml.ejs"),
         data: {
-          images: {
-            logoLba: `${imagePath}logo_LBA.png`,
-            logoRf: `${imagePath}logo_rf.png`,
-          },
+          images: getEmailLogos(),
           company: {
             siret: company.workplace_siret,
             name: company.workplace_legal_name || company.workplace_brand,

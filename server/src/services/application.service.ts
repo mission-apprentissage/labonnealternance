@@ -27,12 +27,12 @@ import { pipeline } from "stream/promises"
 import { z } from "zod"
 import { logger } from "@/common/logger"
 import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/aws-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { manageApiError } from "@/common/utils/error-manager"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { createToken, getTokenValue } from "@/common/utils/jwt-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { resetReplayedSearchParams } from "@/jobs/applications/relance-search-url"
@@ -70,8 +70,7 @@ export const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
 
 const images: object = {
   images: {
-    logoLba: `${imagePath}logo_LBA.png`,
-    logoRf: `${imagePath}logo_rf.png`,
+    ...getEmailLogos(),
     logoGrimp: `${imagePath}logo_grimp.png`,
     icoInfo: `${imagePath}icone_info.png`,
     icoCandidat: `${imagePath}icone_candidat.png`,

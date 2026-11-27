@@ -9,6 +9,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -90,11 +91,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
         subject,
         template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
         data: {
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-          },
+          images: getEmailLogos(),
           last_name: sanitizeTextField(contactUser.last_name),
           first_name: sanitizeTextField(contactUser.first_name),
           establishment_raison_sociale: getReminderCompanyName(firstJob),

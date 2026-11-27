@@ -1,6 +1,7 @@
 import { forbidden, unauthorized } from "@hapi/boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { startSession, stopSession } from "@/common/utils/session.service"
@@ -77,10 +78,7 @@ export default (server: Server) => {
         subject: "Lien de connexion",
         template: getStaticFilePath("./templates/mail-connexion.mjml.ejs"),
         data: {
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-          },
+          images: getEmailLogos(),
           last_name: sanitizeTextField(removeUrlsFromText(last_name)),
           first_name: sanitizeTextField(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),

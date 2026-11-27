@@ -5,6 +5,7 @@ import { RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
@@ -39,7 +40,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
     subject: `Une entreprise recrute dans votre domaine`,
     template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
     data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
+      images: getEmailLogos(),
       enterpriseName: offre.workplace_brand || offre.workplace_name || offre.workplace_legal_name,
       jobName: offre.offer_title,
       contractType: (offre.contract_type ?? []).join(", "),
@@ -77,7 +78,7 @@ export async function sendMailOffreRefusee({
     subject: MAIL_OFFRE_REFUSEE_SUBJECT,
     template: getStaticFilePath("./templates/mail-offre-refusee.mjml.ejs"),
     data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
+      images: getEmailLogos(),
       nom: sanitizeTextField(user.last_name),
       prenom: sanitizeTextField(user.first_name),
       date_depot: dayjs(job.created_at).tz().format("DD/MM/YYYY"),
@@ -108,7 +109,7 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
     subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} est publiée` : "Votre offre d'alternance est publiée",
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
+      images: getEmailLogos(),
       nom: sanitizeTextField(last_name),
       prenom: sanitizeTextField(first_name),
       raison_sociale: establishmentTitle,

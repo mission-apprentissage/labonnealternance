@@ -1,4 +1,5 @@
 import { logger } from "@/common/logger"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
@@ -62,8 +63,7 @@ export const premiumActivatedReminder = async () => {
         data: {
           isParcoursup: true,
           images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            ...getEmailLogos(),
             logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
             optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           },
@@ -131,8 +131,7 @@ export const premiumActivatedReminderAffelnet = async () => {
         data: {
           isAffelnet: true,
           images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            ...getEmailLogos(),
             optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           },
           publicEmail: config.publicEmail,

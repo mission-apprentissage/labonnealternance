@@ -1,5 +1,6 @@
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { isValidEmail } from "@/common/utils/is-valid-email"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -87,8 +88,7 @@ export const inviteEtablissementParcoursupToPremium = async (bypassDate?: boolea
       data: {
         isParcoursup: true,
         images: {
-          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          ...getEmailLogos(),
           optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
         },
