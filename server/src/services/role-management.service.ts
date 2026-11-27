@@ -58,7 +58,8 @@ const insertRoleIfAbsent = async (role: IRoleManagement): Promise<boolean> => {
 
 export const modifyPermissionToUser = async (
   props: RoleKey & Partial<Pick<IRoleManagement, "handiEngagement">>,
-  eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
+  eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">,
+  { recordReasonChange = false }: { recordReasonChange?: boolean } = {}
 ): Promise<IRoleManagement> => {
   const now = new Date()
   const event: IRoleManagementEvent = {
@@ -86,7 +87,10 @@ export const modifyPermissionToUser = async (
   }
 
   const lastEvent = getLastStatusEvent(role.status)
-  if (lastEvent?.status === eventProps.status) {
+  // recordReasonChange : l'inscription crée le rôle en attente avant la validation automatique, dont le motif (refus, source indisponible) arrive donc à statut égal.
+  // Le motif posé par un admin ou un OPCO reste le dernier : un rejeu de la validation automatique ne le recouvre pas.
+  const isNewAutoReason = recordReasonChange && lastEvent?.validation_type === VALIDATION_UTILISATEUR.AUTO && lastEvent.reason !== eventProps.reason
+  if (lastEvent?.status === eventProps.status && !isNewAutoReason) {
     return role
   }
   const updatedRole = await getDbCollection("rolemanagements").findOneAndUpdate(
