@@ -135,12 +135,12 @@ Définie par `buildTextClauses` ([`search.service.ts`](../../server/src/services
 - En tri `sort=proximity`, ces deux clauses **basculent en `filter`** (elles ne scorent plus) ; le score provient alors de l'opérateur `near`.
 - `q` est **optionnel** : sans `q`, aucune clause texte n'est ajoutée (la recherche repose sur la géo et les filtres).
 
-### Côté front — champ « Métier » (`/beta/recherche`)
+### Côté front — champ « Métier » (`/recherche`)
 
-Composant [`SearchBar.tsx`](../../ui/app/beta/_components/SearchBar.tsx) :
+Composant [`SearchBar.tsx`](../../ui/app/(candidat)/(recherche)/recherche/_components/SearchBar.tsx) :
 
 - **Champ texte libre** « Que recherchez-vous ? » (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
-- **Suggestions** : endpoint dédié `/v1/search/suggest?q=<saisie>&limit=8&mode=<mode>` (contenu indexé du corpus du mode + suggestions apprises), *throttle* ~300 ms, à partir de **3 caractères**. Dropdown : 1ʳᵉ ligne « Rechercher : {saisie} » (recherche texte libre) + groupe « Suggestions » avec la sous-chaîne matchée en gras.
+- **Suggestions** : endpoint dédié `/v1/search/suggest?q=<saisie>&limit=8&mode=<mode>` (contenu indexé du corpus du mode + suggestions apprises, sauf en mode `emplois_formation`), *throttle* ~300 ms, à partir de **3 caractères**. Dropdown : 1ʳᵉ ligne « Rechercher : {saisie} » (recherche texte libre) + groupe « Suggestions » avec la sous-chaîne matchée en gras.
 - **Déclenchement de la recherche** (pas de bouton de soumission sur la page résultats) : touche **Entrée**, **sélection d'une suggestion** ou de la ligne « Rechercher : … », ou **vidage** du champ (retire `q`).
 
 ## Architecture technique

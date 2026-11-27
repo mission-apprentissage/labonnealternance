@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
+import { suggestLearnedTerms } from "@/services/search/search.service"
 import { normalizeQuery } from "@/services/search/search-query-log.service"
 
 import { analyzeSearchQueries } from "./analyze-search-queries"
@@ -15,6 +16,7 @@ vi.mock("@/services/mistralai/mistralai.service", () => ({ sendMistralBatch: vi.
 vi.mock("@/services/search/search.service", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/services/search/search.service")>()),
   suggestSearchTerms: vi.fn().mockResolvedValue({ suggestions: [] }),
+  suggestLearnedTerms: vi.fn().mockResolvedValue([]),
   searchItems: vi.fn().mockResolvedValue({ nbHits: 1 }),
 }))
 
@@ -168,6 +170,25 @@ describe("analyzeSearchQueries", () => {
 
     await analyzeSearchQueries()
 
+    expect(sendMistralBatch).not.toHaveBeenCalled()
+    expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
+  })
+
+  it("écarte un candidat couvert par une suggestion apprise évincée par les intitulés dans tous les modes", async () => {
+    await getDbCollection("search_queries").insertMany(queryLogs("boulanger", { total: 40, nbHits: 50 }))
+    vi.mocked(suggestLearnedTerms).mockResolvedValueOnce(["Boulanger pâtissier"])
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_suggestions").findOne({ term: "boulanger" })).toMatchObject({ status: "rejected", rejection_reason: "already_suggested" })
+    expect(sendMistralBatch).not.toHaveBeenCalled()
+  })
+
+  it("échoue sans appeler Mistral quand les suggestions apprises ne répondent pas", async () => {
+    await getDbCollection("search_queries").insertMany(queryLogs("boulanger", { total: 40, nbHits: 50 }))
+    vi.mocked(suggestLearnedTerms).mockRejectedValueOnce(new Error("search_suggestions_index indisponible"))
+
+    await expect(analyzeSearchQueries()).rejects.toThrow("search_suggestions_index indisponible")
     expect(sendMistralBatch).not.toHaveBeenCalled()
     expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
   })

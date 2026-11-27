@@ -304,13 +304,22 @@ const buildStartDateFilter = (start_date: Date) => ({
  */
 type DiplomaTermsPolicy = "stopword" | "qualifier"
 
+/**
+ * Suggestions apprises des recherches (`search_suggestions`) servies par corpus :
+ * - "all" : toutes ;
+ * - "non_formation" (emplois) : sans les termes classés `formation`, comme les intitulés RCO (#5389) ;
+ * - "none" (emplois avec formation incluse) : sur ce petit corpus, un terme appris tous modes
+ *   confondus peut n'avoir aucune offre ; seuls ses intitulés sont suggérés (#6055).
+ */
+type UserSuggestionsPolicy = "all" | "non_formation" | "none"
+
 // Un mode = un corpus : sa collection, son index Atlas Search et ses réglages (#5389). La
 // répartition des items entre collections suit getSearchCorpusCollection (search-items.service.ts).
 const SEARCH_CORPORA = {
-  emplois: { collection: "search_jobs", index: "search_jobs_index", diplomaTerms: "stopword" },
-  emplois_formation: { collection: "search_jobs_with_training", index: "search_jobs_with_training_index", diplomaTerms: "qualifier" },
-  formations: { collection: "search_trainings", index: "search_trainings_index", diplomaTerms: "qualifier" },
-} as const satisfies Record<SearchMode, { collection: string; index: string; diplomaTerms: DiplomaTermsPolicy }>
+  emplois: { collection: "search_jobs", index: "search_jobs_index", diplomaTerms: "stopword", userSuggestions: "non_formation" },
+  emplois_formation: { collection: "search_jobs_with_training", index: "search_jobs_with_training_index", diplomaTerms: "qualifier", userSuggestions: "none" },
+  formations: { collection: "search_trainings", index: "search_trainings_index", diplomaTerms: "qualifier", userSuggestions: "all" },
+} as const satisfies Record<SearchMode, { collection: string; index: string; diplomaTerms: DiplomaTermsPolicy; userSuggestions: UserSuggestionsPolicy }>
 
 type SearchCorpus = (typeof SEARCH_CORPORA)[SearchMode]
 
@@ -904,9 +913,10 @@ async function suggestFromItems(q: string, limit: number, corpus: SearchCorpus):
 
 // Autocomplétion sur les suggestions issues des recherches utilisateurs (collection
 // `search_suggestions`, alimentée par le job analyzeSearchQueries — seuls les termes
-// `active` sont servis ; kill-switch : passer origin user_queries en disabled). En mode emplois,
-// les termes classés `formation` sont écartés pour la même raison que les intitulés RCO (#5389).
-async function suggestFromUserSuggestions(q: string, limit: number, mode: SearchMode): Promise<string[]> {
+// `active` sont servis ; kill-switch : passer origin user_queries en disabled). Filtre par corpus :
+// cf. UserSuggestionsPolicy.
+async function suggestFromUserSuggestions(q: string, limit: number, policy: UserSuggestionsPolicy): Promise<string[]> {
+  if (policy === "none") return []
   const rows = await getDbCollection("search_suggestions")
     .aggregate<{ term: string }>(
       [
@@ -916,7 +926,7 @@ async function suggestFromUserSuggestions(q: string, limit: number, mode: Search
             compound: {
               must: [{ autocomplete: { query: q, path: "term", fuzzy: { maxEdits: 1 } } }],
               filter: [{ equals: { path: "status", value: "active" } }],
-              ...(mode === "emplois" ? { mustNot: [{ equals: { path: "category", value: "formation" } }] } : {}),
+              ...(policy === "non_formation" ? { mustNot: [{ equals: { path: "category", value: "formation" } }] } : {}),
             },
           },
         },
@@ -929,17 +939,24 @@ async function suggestFromUserSuggestions(q: string, limit: number, mode: Search
   return rows.map((row) => row.term)
 }
 
+/** Suggestions apprises actives, sans filtre de mode : anti-doublon de analyzeSearchQueries. */
+export function suggestLearnedTerms(q: string, limit: number): Promise<string[]> {
+  return suggestFromUserSuggestions(q, limit, "all")
+}
+
 /**
  * Autocomplétion par préfixe pour la barre de recherche : fusionne le contenu réellement
- * indexé du corpus du mode (title/rome_labels — prioritaire) et les suggestions apprises des
- * recherches utilisateurs (en complément jusqu'à `limit`). Les deux requêtes $search partent en
- * parallèle ; la déduplication et le filtre anti-bruit fuzzy s'appliquent aux deux listes.
+ * indexé du corpus du mode (title/rome_labels — prioritaire) et, selon le corpus, les suggestions
+ * apprises des recherches utilisateurs (en complément jusqu'à `limit`, cf. UserSuggestionsPolicy).
+ * Les requêtes $search partent en parallèle ; la déduplication et le filtre anti-bruit fuzzy
+ * s'appliquent aux deux listes.
  */
 export async function suggestSearchTerms({ q, limit, mode = DEFAULT_SEARCH_MODE }: { q: string; limit: number; mode?: SearchMode }): Promise<{ suggestions: string[] }> {
+  const corpus = SEARCH_CORPORA[mode]
   const [itemCandidates, userCandidates] = await Promise.all([
-    suggestFromItems(q, limit, SEARCH_CORPORA[mode]),
+    suggestFromItems(q, limit, corpus),
     // La collection peut ne pas exister / index absent (env de test) → dégradation silencieuse.
-    suggestFromUserSuggestions(q, limit, mode).catch(() => [] as string[]),
+    suggestFromUserSuggestions(q, limit, corpus.userSuggestions).catch(() => [] as string[]),
   ])
 
   const diacritics = new RegExp("[\\u0300-\\u036f]", "g")

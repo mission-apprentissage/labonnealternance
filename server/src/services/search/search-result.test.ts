@@ -5,7 +5,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
-import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
+import { type SearchMode, searchItems, suggestLearnedTerms, suggestSearchTerms } from "@/services/search/search.service"
 import { getSearchCorpusCollection, resetRomeLabelByCodeCache } from "@/services/search/search-items.service"
 
 /**
@@ -690,6 +690,11 @@ const USER_SUGGESTIONS = [
   suggestionFixture("Boulangerie industrielle", "disabled"),
   suggestionFixture("Vendeur en boulangerie", "active"),
   suggestionFixture("BTS digitalisation relation client", "active", "formation"),
+  // Mode emplois_formation (#6055) : terme sans offre du mode, terme que le mode trouve mais qui ne
+  // préfixe aucun intitulé, terme identique à un rome_label d'une offre du mode.
+  suggestionFixture("Auxiliaire de puériculture", "active"),
+  suggestionFixture("Travaux de chantier", "active"),
+  suggestionFixture("Conduite de travaux du BTP et de travaux paysagers", "active"),
 ]
 
 // Chaque document va dans la collection de son mode, comme la double écriture (upsertSearchItem).
@@ -1159,6 +1164,26 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(formations.suggestions).toEqual(["BTS Négociation et digitalisation de la relation client", "BTS digitalisation relation client"])
     })
 
+    it("suggest emplois_formation : seuls les intitulés du corpus du mode, aucun terme appris des recherches", async () => {
+      const suggest = async (q: string, mode: SearchMode) => (await suggestSearchTerms({ q, limit: 8, mode })).suggestions
+
+      expect(await search({ q: "auxiliaire de puériculture", mode: "emplois_formation" })).toMatchObject({ nbHits: 0 })
+      expect(await suggest("puéricult", "emplois")).toEqual(["Auxiliaire de puériculture"])
+      expect(await suggest("puéricult", "formations")).toEqual(["Auxiliaire de puériculture"])
+      expect(await suggest("puéricult", "emplois_formation")).toEqual([])
+
+      // Perte assumée : un terme appris que le mode trouve mais qui ne préfixe aucun intitulé n'est pas suggéré.
+      expect(ids(await search({ q: "travaux de chantier", mode: "emplois_formation" }))).toContain("offre-travaux-cfa")
+      expect(await suggest("travaux de chantier", "emplois")).toEqual(["Travaux de chantier"])
+      expect(await suggest("travaux de chantier", "emplois_formation")).toEqual([])
+
+      expect(await suggest("conduite de travaux", "emplois_formation")).toEqual(["Conduite de travaux du BTP et de travaux paysagers"])
+      expect(await suggest("conducteur de travaux", "emplois_formation")).toEqual(["Conducteur de travaux avec formation incluse"])
+      for (const q of ["Conduite de travaux du BTP et de travaux paysagers", "Conducteur de travaux avec formation incluse"]) {
+        expect(ids(await search({ q, mode: "emplois_formation" }))).toContain("offre-travaux-cfa")
+      }
+    })
+
     it("formations : mots de diplôme en qualificatifs, « bac pro vente » ne ramène pas « Bac pro cuisine »", async () => {
       const result = await search({ q: "bac pro vente", mode: "formations" })
 
@@ -1349,6 +1374,14 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       const fromUsers = suggestions.indexOf("Boulangerie artisanale")
       expect(fromItems).toBeGreaterThanOrEqual(0)
       expect(fromUsers).toBeGreaterThan(fromItems)
+    })
+
+    it("anti-doublon du job : toutes les suggestions actives, quelle que soit la catégorie ou le corpus", async () => {
+      expect(await suggestLearnedTerms("digitalisation", 5)).toEqual(["BTS digitalisation relation client"])
+      expect(await suggestLearnedTerms("puéricult", 5)).toEqual(["Auxiliaire de puériculture"])
+      const boulangerie = await suggestLearnedTerms("boulangerie", 5)
+      expect(boulangerie).toContain("Boulangerie artisanale")
+      expect(boulangerie).not.toContain("Boulangerie industrielle")
     })
 
     it("déduplique une suggestion apprise identique à un intitulé indexé", async () => {
