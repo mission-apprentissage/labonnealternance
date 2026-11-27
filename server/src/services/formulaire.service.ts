@@ -37,6 +37,7 @@ import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import type z from "zod"
 import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mail-utils"
 import { maskPersonalData } from "@/common/utils/mask-personal-data"
@@ -344,10 +345,7 @@ const notifyCfaDelegations = async (
       job_title: jobTitle,
       job_url: jobUrl,
       delegations: sentDelegations,
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: getEmailLogos(),
       publicEmail: config.publicEmail,
     },
   })

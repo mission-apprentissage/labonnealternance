@@ -13,7 +13,11 @@ const answersTo = (questions: readonly string[], count: number) => questions.sli
 
 const render = (template: string, data: ReturnType<typeof buildApplicantAnswersForEmail>) =>
   mailer.renderEmail(getStaticFilePath(`./templates/${template}.mjml.ejs`), {
-    images: { logoLba: "https://exemple.fr/logo_LBA.png", logoRf: "https://exemple.fr/logo_rf.png" },
+    images: {
+      logoLba: "https://exemple.fr/logo_la_bonne_alternance.png",
+      logoRf: "https://exemple.fr/logo_republique_francaise.png",
+      logoNumeriqueGouv: "https://exemple.fr/logo_numerique_gouv.png",
+    },
     applicant_first_name: "Camille",
     applicant_last_name: "Martin",
     company_name: "Boulangerie du test",

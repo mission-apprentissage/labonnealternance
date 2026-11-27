@@ -27,7 +27,11 @@ const fakeData = (values: Record<string, unknown>, path = "data"): Record<string
 const values = {
   publicEmail: "contact@exemple.fr",
   utmParams: "utm_source=test&utm_campaign=snapshot",
-  images: { logoRf: "https://exemple.fr/logo_rf.png", logoLba: "https://exemple.fr/logo_lba.png" },
+  images: {
+    logoRf: "https://exemple.fr/logo_republique_francaise.png",
+    logoLba: "https://exemple.fr/logo_la_bonne_alternance.png",
+    logoNumeriqueGouv: "https://exemple.fr/logo_numerique_gouv.png",
+  },
   threshold: 3,
   comment: "Première ligne.\nSeconde ligne.",
   jobSourceType: "ENTREPRISE",

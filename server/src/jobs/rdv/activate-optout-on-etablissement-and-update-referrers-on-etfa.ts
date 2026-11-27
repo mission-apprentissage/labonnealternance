@@ -2,6 +2,7 @@ import * as _ from "lodash-es"
 
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
@@ -51,8 +52,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
         template: getStaticFilePath("./templates/mail-cfa-optout-start.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            ...getEmailLogos(),
             optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           },
           etablissement: {
@@ -89,8 +89,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             data: {
               url: config.publicUrl,
               images: {
-                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+                ...getEmailLogos(),
                 optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
               },
               etablissement: {

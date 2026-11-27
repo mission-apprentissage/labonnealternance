@@ -10,6 +10,7 @@ import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection, READ_OWN_WRITES } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
@@ -341,10 +342,7 @@ export const sendDeactivatedRecruteurMail = async ({
     subject: "Mise à jour de votre compte sur La bonne alternance",
     template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
     data: {
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: getEmailLogos(),
       last_name: sanitizeTextField(last_name),
       first_name: sanitizeTextField(first_name),
       reason: sanitizeTextField(errorMessage),

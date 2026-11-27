@@ -5,6 +5,7 @@ import dayjs from "shared/helpers/dayjs"
 import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
@@ -140,10 +141,7 @@ export const sendMiseEnRelation = async () => {
             job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             job_url: jobUrl.toString(),
             link: createMERInvitationLink(user, job._id.toString(), establishmentId),
-            images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-            },
+            images: getEmailLogos(),
             publicEmail: config.publicEmail,
           },
         })

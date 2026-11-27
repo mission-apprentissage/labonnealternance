@@ -5,6 +5,7 @@ import { mailType } from "shared/constants/appointment"
 import type { ReferrerObject } from "shared/constants/referers"
 import { prepareMessageForMail } from "shared/helpers/common"
 import dayjs from "shared/helpers/dayjs"
+import { getEmailLogos } from "@/common/utils/email-logos"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -63,9 +64,7 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
       created_at: appointment.created_at,
     },
     images: {
-      logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-      logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+      ...getEmailLogos(),
       peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
       idee: `${config.publicUrl}/images/emails/icone_idee.png?raw=true`,
     },
@@ -115,10 +114,7 @@ export const sendCfaAnswerToApplicantEmail = async ({
       nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
       cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,
       cfa_phone: cfaPhone,
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: getEmailLogos(),
       publicEmail: config.publicEmail,
     },
   })
