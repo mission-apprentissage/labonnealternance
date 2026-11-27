@@ -12,8 +12,8 @@ class ByNameSequencer extends BaseSequencer {
 // Conditions du projet server (cf. vitest.config.ts à la racine) : un worker sans isolation, avec son fichier de setup,
 // et un ordre fixe pour que chaque fixture passe après celle qui pourrait lui laisser un mock.
 export default defineConfig({
-  // Par défaut sous la racine du test : un node_modules apparaîtrait à côté des fixtures.
-  cacheDir: fileURLToPath(new URL("../../../../node_modules/.vite", import.meta.url)),
+  // Par défaut sous la racine du test (un node_modules à côté des fixtures) ; à part du cache du run parent.
+  cacheDir: fileURLToPath(new URL("../../../../node_modules/.vite/mock-isolation", import.meta.url)),
   test: {
     root: fileURLToPath(new URL(".", import.meta.url)),
     include: ["*.fixture.ts"],
