@@ -6,6 +6,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
+import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
@@ -195,6 +196,18 @@ export default function PlanDuSite() {
                         {diplomeData.slice(0, 10).map((diplome) => (
                           <Box component="li" key={diplome.slug}>
                             <DsfrLink href={PAGES.dynamic.seoDiplome(diplome.slug).getPath()}>{diplome.titre}</DsfrLink>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                    <Box component="li">
+                      <Typography component="h2" variant="h2" mt={fr.spacing("4v")} mb={fr.spacing("2v")}>
+                        Alternance par secteur
+                      </Typography>
+                      <Box component="ul">
+                        {secteurData.map((secteur) => (
+                          <Box component="li" key={secteur.slug}>
+                            <DsfrLink href={PAGES.dynamic.seoSecteur(secteur.slug).getPath()}>Alternance {secteur.secteur.toLowerCase()}</DsfrLink>
                           </Box>
                         ))}
                       </Box>

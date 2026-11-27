@@ -130,6 +130,13 @@ export default function AlternanceMetiers() {
             métiers porteurs avec leurs offres, leurs entreprises et leurs formations. Voici comment choisir le vôtre.
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v"), fontSize: "1.125rem" }}>
+            Vous hésitez encore entre plusieurs métiers ?{" "}
+            <Link href={PAGES.static.alternanceSecteurs.getPath()} className={fr.cx("fr-link")}>
+              Explorez l'alternance par secteur
+            </Link>
+            .
+          </Typography>
+          <Typography component="p" sx={{ mb: fr.spacing("3v"), fontSize: "1.125rem" }}>
             <strong>{metierData.length} métiers en alternance</strong> à explorer sur La bonne alternance, des métiers du tertiaire aux métiers du numérique, en passant par le
             médico-social et l'artisanat. Pour chaque métier, retrouvez les offres d'alternance disponibles, les entreprises qui recrutent activement, le salaire brut mensuel moyen
             pratiqué en contrat d'apprentissage ou de professionnalisation, ainsi que les formations associées (CAP, BTS, BUT, Licence Pro, Master).

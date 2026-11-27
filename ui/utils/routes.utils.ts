@@ -78,6 +78,11 @@ export const PAGES = {
       title: "Métiers en alternance",
       index: true,
     },
+    alternanceSecteurs: {
+      getPath: () => `/alternance/secteurs` as string,
+      title: "Secteurs en alternance",
+      index: true,
+    },
     alternanceVilles: {
       getPath: () => `/alternance/villes` as string,
       title: "Alternance dans les grandes villes",
@@ -695,6 +700,10 @@ export const PAGES = {
     seoMetier: (metierSlug: string, metierLabel?: string): IPage => ({
       getPath: () => `/alternance/metier/${metierSlug}`,
       title: metierLabel ?? `Trouver une alternance en ${metierSlug}`,
+    }),
+    seoSecteur: (secteurSlug: string, secteurLabel?: string): IPage => ({
+      getPath: () => `/alternance/secteur/${secteurSlug}`,
+      title: secteurLabel ?? `Alternance ${secteurSlug}`,
     }),
     seoDiplome: (diplomeSlug: string, diplomeLabel?: string): IPage => ({
       getPath: () => `/alternance/diplome/${diplomeSlug}`,

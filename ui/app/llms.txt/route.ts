@@ -1,7 +1,8 @@
+import { fetchSecteursIndexables } from "@/services/fetch-secteurs-indexables"
 import { generateLlmsTxt } from "@/services/generate-llms-txt"
 
 export async function GET(request: Request) {
-  const llmsTxt = generateLlmsTxt(request)
+  const llmsTxt = generateLlmsTxt(request, { secteursIndexables: await fetchSecteursIndexables() })
   return new Response(llmsTxt, {
     status: 200,
     headers: {
