@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import type { IUnsubscribedLbaCompany } from "shared"
+import { UNSUBSCRIBE_REASONS } from "shared/constants/unsubscribe"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
@@ -90,8 +91,10 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], { re
       created_at,
       last_update_at: updated_at,
       unsubscribe_reason: reason,
-      unsubscribe_reason_detail: reason === "Autre" ? reasonDetail || null : null,
+      unsubscribe_reason_detail: reason === UNSUBSCRIBE_REASONS.AUTRE ? reasonDetail || null : null,
       unsubscribe_date: now,
+      // Minimisation des données : l'e-mail ne sert qu'à relancer les entreprises au besoin satisfait « cette année ».
+      email: reason === UNSUBSCRIBE_REASONS.DEJA_TROUVE ? company.apply_email || null : null,
     }
     return unsubscribedLbaCompany
   })
@@ -103,7 +106,7 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], { re
   // explicite de l'index de recherche (la sync détecte les _id disparus et les supprime).
   syncJobPartnersToSearchItemsInBackground(idsToDelete)
 
-  if (reason === "OPPOSITION") {
+  if (reason === UNSUBSCRIBE_REASONS.OPPOSITION) {
     const siretsToObfuscate = companies.map((company) => company.workplace_siret!)
     await obfuscateLbaCompanyApplications(siretsToObfuscate)
   }

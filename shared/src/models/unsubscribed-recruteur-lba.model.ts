@@ -24,6 +24,7 @@ const ZUnsubscribedLbaCompany = z.strictObject({
   unsubscribe_date: z.coerce.date<Date>().describe("Date de désinscription"),
   unsubscribe_reason: z.string().describe("Raison de la désinscription"),
   unsubscribe_reason_detail: z.string().max(UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH).nullish().describe("Précision libre saisie par l'entreprise avec le motif « Autre »"),
+  email: z.string().nullish().describe("E-mail de l'établissement, conservé uniquement pour le motif « déjà trouvé nos alternants » (relance de nurturing)"),
 })
 
 export type IUnsubscribedLbaCompany = z.output<typeof ZUnsubscribedLbaCompany>

@@ -8,6 +8,7 @@ import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { FormikContext, useFormik } from "formik"
 import { useId, useRef, useState } from "react"
+import { UNSUBSCRIBE_REASONS } from "shared/constants/unsubscribe"
 import { UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH } from "shared/models/unsubscribed-recruteur-lba.model"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
@@ -23,16 +24,7 @@ import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { type IUnsubscribeFormValues, REASON_AUTRE, toUnsubscribeBody } from "./unsubscribe-body"
 
-const unsubscribeReasons = [
-  "Nous avons déjà trouvé nos alternants pour l’année en cours",
-  "Les candidatures ne correspondent pas aux activités de mon entreprise",
-  "J'utilise d'autres canaux pour mes recrutements d'alternants",
-  "Mon entreprise n’a pas la capacité financière pour recruter un alternant",
-  "Mon entreprise ne recrute pas en alternance",
-  "Je m'oppose au traitement des mes données par La bonne alternance",
-  "L’entreprise est fermée",
-  REASON_AUTRE,
-]
+const unsubscribeReasons = Object.values(UNSUBSCRIBE_REASONS)
 
 // Reprend la taille des h2 de DepotSimplifieStyling, qui ne s'applique pas à un <p>
 const sousTitreSx = { fontSize: { xs: "16px", lg: "24px" }, lineHeight: { xs: "24px", lg: "32px" } }

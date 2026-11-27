@@ -1,4 +1,6 @@
-export const REASON_AUTRE = "Autre"
+import { UNSUBSCRIBE_REASONS } from "shared/constants/unsubscribe"
+
+export const REASON_AUTRE = UNSUBSCRIBE_REASONS.AUTRE
 
 export type IUnsubscribeFormValues = { email: string; reason: string; reason_detail: string }
 

@@ -1,5 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import { UNSUBSCRIBE_REASONS } from "shared/constants/unsubscribe"
+import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH } from "shared/models/unsubscribed-recruteur-lba.model"
@@ -29,6 +31,7 @@ describe("unsubscribe recruteur LBA", () => {
   beforeEach(async () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("unsubscribedrecruteurslba").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
   })
 
   it("enregistre la précision du motif, sans les espaces autour", async () => {
@@ -83,5 +86,49 @@ describe("unsubscribe recruteur LBA", () => {
 
     expect(response.statusCode).toBe(400)
     expect(await getDbCollection("unsubscribedrecruteurslba").countDocuments()).toBe(0)
+  })
+
+  it("conserve l'e-mail de l'établissement pour le motif « déjà trouvé nos alternants »", async () => {
+    await insertCompanies(["11000001500013"])
+
+    const response = await httpClient().inject({ method: "POST", path: "/api/unsubscribe", body: { email, reason: UNSUBSCRIBE_REASONS.DEJA_TROUVE } })
+
+    expect(response.statusCode).toBe(200)
+    const [unsubscribed] = await getDbCollection("unsubscribedrecruteurslba").find({}).toArray()
+    expect(unsubscribed.email).toBe(email)
+  })
+
+  it.each([UNSUBSCRIBE_REASONS.ENTREPRISE_FERMEE, UNSUBSCRIBE_REASONS.OPPOSITION, UNSUBSCRIBE_REASONS.AUTRE])("ne conserve pas l'e-mail pour le motif « %s »", async (reason) => {
+    await insertCompanies(["11000001500013"])
+
+    const response = await httpClient().inject({ method: "POST", path: "/api/unsubscribe", body: { email, reason } })
+
+    expect(response.statusCode).toBe(200)
+    const [unsubscribed] = await getDbCollection("unsubscribedrecruteurslba").find({}).toArray()
+    expect(unsubscribed.email).toBeNull()
+  })
+
+  it("anonymise les candidatures reçues par l'établissement qui s'oppose au traitement de ses données", async () => {
+    const siret = "11000001500013"
+    await insertCompanies([siret])
+    await getDbCollection("applications").insertOne(generateApplicationFixture({ company_siret: siret, company_email: email }))
+
+    const response = await httpClient().inject({ method: "POST", path: "/api/unsubscribe", body: { email, reason: UNSUBSCRIBE_REASONS.OPPOSITION } })
+
+    expect(response.statusCode).toBe(200)
+    const application = await getDbCollection("applications").findOne({ company_siret: siret })
+    expect(application?.company_email).toBe("faux_email@faux-domaine-compagnie.com")
+  })
+
+  it("laisse les candidatures intactes pour un autre motif", async () => {
+    const siret = "11000001500013"
+    await insertCompanies([siret])
+    await getDbCollection("applications").insertOne(generateApplicationFixture({ company_siret: siret, company_email: email }))
+
+    const response = await httpClient().inject({ method: "POST", path: "/api/unsubscribe", body: { email, reason: UNSUBSCRIBE_REASONS.DEJA_TROUVE } })
+
+    expect(response.statusCode).toBe(200)
+    const application = await getDbCollection("applications").findOne({ company_siret: siret })
+    expect(application?.company_email).toBe(email)
   })
 })
