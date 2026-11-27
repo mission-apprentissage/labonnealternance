@@ -1,7 +1,8 @@
 import { existsSync, realpathSync } from "node:fs"
+import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { MongoClient } from "mongodb"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import config from "@/config"
 import {
@@ -64,6 +65,18 @@ describe("getTestDbNamespace", () => {
     expect(existsSync(join(WORKTREE_ROOT, "server/tests/utils/test-database.ts"))).toBe(true)
     expect(realpathSync(WORKTREE_ROOT)).toBe(WORKTREE_ROOT)
     expect(getTestDbNamespace({})).toBe(namespaceFromRoot(WORKTREE_ROOT))
+  })
+
+  it("ne dépend pas du répertoire courant", async () => {
+    const cwd = process.cwd()
+    try {
+      process.chdir(tmpdir())
+      vi.resetModules()
+      const reloaded = await import("./test-database")
+      expect(reloaded.WORKTREE_ROOT).toBe(WORKTREE_ROOT)
+    } finally {
+      process.chdir(cwd)
+    }
   })
 })
 
