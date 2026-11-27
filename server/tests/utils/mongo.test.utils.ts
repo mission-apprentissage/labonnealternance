@@ -3,11 +3,12 @@ import { afterAll, beforeAll, beforeEach } from "vitest"
 
 import { clearAllCollections, closeMongodbConnection, configureDbSchemaValidation, connectToMongodb, createIndexes, getDatabase } from "@/common/utils/mongodb-utils"
 import config from "@/config"
+import { resolveTestMongoUri } from "./test-database"
 
-// Une base par pool (1..maxWorkers), réutilisée d'un fichier à l'autre plutôt que recréée :
-// créer une base coûte ~400 tables WiredTiger, dont les pics dépassent hookTimeout en CI.
+// Une base par pool (1..maxWorkers) et par worktree (cf. resolveTestMongoUri), réutilisée d'un fichier à l'autre
+// plutôt que recréée : créer une base coûte ~400 tables WiredTiger, dont les pics dépassent hookTimeout en CI.
 export const startAndConnectMongodb = async () => {
-  await connectToMongodb(config.mongodb.uri.replace("VITEST_POOL_ID", `${process.env.VITEST_POOL_ID}`))
+  await connectToMongodb(resolveTestMongoUri(config.mongodb.uri, process.env.VITEST_POOL_ID))
   await dropUndeclaredCollections()
   await Promise.all([createIndexes(), configureDbSchemaValidation(modelDescriptors)])
 }
