@@ -348,6 +348,20 @@ describe("autoValidateUserRoleOnCompany : raison enregistrée sur le rôle", () 
       expect(await reasons()).toHaveLength(2)
     })
 
+    it("ajoute le nouveau motif quand il change au rejeu", async () => {
+      const { validateRole, reasons } = await signUpThenValidate()
+      mockBal().reply(200, { status: "invalid", is_valid: false })
+      await validateRole()
+      mockBal().reply(503)
+      await validateRole()
+
+      expect((await reasons())?.map(([, reason]) => reason)).toEqual([
+        "création de compte",
+        "pas de validation automatique possible",
+        "validation automatique indéterminée : BAL indisponible",
+      ])
+    })
+
     it("ne recouvre pas le motif posé par un OPCO quand la validation est rejouée", async () => {
       mockBal().reply(200, { status: "invalid", is_valid: false })
       const { validateRole, reasons, user } = await signUpThenValidate()

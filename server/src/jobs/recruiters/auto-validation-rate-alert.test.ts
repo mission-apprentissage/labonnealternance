@@ -34,6 +34,7 @@ const DAY_MS = 24 * 60 * 60 * 1000
 const BAL_REASON = "validation par : BAL (sources : akto ; correspondance : email)"
 const LBA_REASON = "validation par : recruteurs LBA (correspondance : email)"
 const REFUSED_REASON = "pas de validation automatique possible"
+const INDETERMINATE_REASON = "validation automatique indéterminée : BAL indisponible"
 
 const event = (status: AccessStatus, reason: string, validation_type = VALIDATION_UTILISATEUR.AUTO) => generateRoleManagementStatusEventFixture({ status, reason, validation_type })
 
@@ -82,6 +83,14 @@ describe("classifyRole", () => {
   it("distingue un résultat indéterminé d'un refus", () => {
     const events = [creation, event(AccessStatus.AWAITING_VALIDATION, "validation automatique indéterminée : akto, opco_ep indisponibles")]
     expect(classifyRole(events)).toEqual({ outcome: "indeterminate", category: "indéterminé (akto, opco_ep indisponibles)", bal: false })
+  })
+
+  it.each([
+    ["refus puis indéterminé", [REFUSED_REASON, INDETERMINATE_REASON], "indeterminate"],
+    ["indéterminé puis refus", [INDETERMINATE_REASON, REFUSED_REASON], "refused"],
+  ])("retient le dernier motif de la validation automatique : %s", (_label, reasons, outcome) => {
+    const events = [creation, ...reasons.map((reason) => event(AccessStatus.AWAITING_VALIDATION, reason))]
+    expect(classifyRole(events).outcome).toBe(outcome)
   })
 
   it("retient l'auto-validation quand un rôle indéterminé est revalidé automatiquement", () => {

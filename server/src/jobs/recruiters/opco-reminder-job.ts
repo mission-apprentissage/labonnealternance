@@ -30,17 +30,24 @@ const getLastOpcoReminderDate = async (): Promise<Date | null> => {
   return lastReminder?.started_at ?? lastReminder?.ended_at ?? null
 }
 
+/**
+ * Date d'entrée dans l'attente en cours : celle du premier des événements AWAITING_VALIDATION consécutifs qui terminent
+ * l'historique, `null` si le rôle n'est pas en attente. Un motif ajouté à statut égal (cf. modifyPermissionToUser) ne la déplace pas.
+ */
+const awaitingSince = {
+  $reduce: {
+    input: "$status",
+    initialValue: null,
+    in: { $cond: [{ $eq: ["$$this.status", AccessStatus.AWAITING_VALIDATION] }, { $ifNull: ["$$value", "$$this.date"] }, null] },
+  },
+}
+
 const getCountableRoleManagements = async (since: Date | null) => {
   return getDbCollection("rolemanagements")
     .aggregate<{ authorized_id: string }>([
       { $match: { authorized_type: AccessEntityType.ENTREPRISE } },
-      { $project: { authorized_id: 1, last_status: { $arrayElemAt: ["$status", -1] } } },
-      {
-        $match: {
-          "last_status.status": AccessStatus.AWAITING_VALIDATION,
-          ...(since ? { "last_status.date": { $gte: since } } : {}),
-        },
-      },
+      { $project: { authorized_id: 1, awaiting_since: awaitingSince } },
+      { $match: { awaiting_since: since ? { $gte: since } : { $ne: null } } },
     ])
     .toArray()
 }
