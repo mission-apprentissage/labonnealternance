@@ -1172,13 +1172,16 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(await suggest("puéricult", "formations")).toEqual(["Auxiliaire de puériculture"])
       expect(await suggest("puéricult", "emplois_formation")).toEqual([])
 
-      // Perte assumée : un terme appris que le mode ne trouve que par les mots-clés n'est plus suggéré.
+      // Perte assumée : un terme appris que le mode ne trouve que par les mots-clés n'est pas suggéré.
       expect(ids(await search({ q: "travaux de chantier", mode: "emplois_formation" }))).toContain("offre-travaux-cfa")
       expect(await suggest("travaux de chantier", "emplois")).toEqual(["Travaux de chantier"])
       expect(await suggest("travaux de chantier", "emplois_formation")).toEqual([])
 
       expect(await suggest("conduite de travaux", "emplois_formation")).toEqual(["Conduite de travaux du BTP et de travaux paysagers"])
       expect(await suggest("conducteur de travaux", "emplois_formation")).toEqual(["Conducteur de travaux avec formation incluse"])
+      for (const q of ["Conduite de travaux du BTP et de travaux paysagers", "Conducteur de travaux avec formation incluse"]) {
+        expect(ids(await search({ q, mode: "emplois_formation" }))).toContain("offre-travaux-cfa")
+      }
     })
 
     it("formations : mots de diplôme en qualificatifs, « bac pro vente » ne ramène pas « Bac pro cuisine »", async () => {

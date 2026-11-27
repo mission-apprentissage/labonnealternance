@@ -939,6 +939,11 @@ async function suggestFromUserSuggestions(q: string, limit: number, policy: User
   return rows.map((row) => row.term)
 }
 
+/** Suggestions apprises actives, sans filtre de mode : anti-doublon de analyzeSearchQueries. */
+export function suggestLearnedTerms(q: string, limit: number): Promise<string[]> {
+  return suggestFromUserSuggestions(q, limit, "all")
+}
+
 /**
  * Autocomplétion par préfixe pour la barre de recherche : fusionne le contenu réellement
  * indexé du corpus du mode (title/rome_labels — prioritaire) et, selon le corpus, les suggestions
