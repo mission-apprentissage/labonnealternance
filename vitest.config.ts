@@ -84,6 +84,17 @@ export default defineConfig({
           include: ["**/*.test.ts"],
         },
       },
+      {
+        // Hooks Claude Code (.claude/hooks) : dépôts git temporaires et sous-processus, d'où leur délai plus long. Ils passent
+        // après les autres projets pour ne pas ajouter leur charge à celle des tests server, aux délais courts.
+        test: {
+          name: "hooks",
+          root: "./.claude/hooks",
+          include: ["tests/**/*.test.mjs"],
+          testTimeout: 30_000,
+          sequence: { groupOrder: 1 },
+        },
+      },
     ],
   },
 })
