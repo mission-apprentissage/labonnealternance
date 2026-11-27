@@ -1,9 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 import { notifyJobSearchViewV3 } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
-import { SearchResultsList } from "./SearchResultsList"
+import { RateLimitedNotice, SearchResultsList } from "./SearchResultsList"
 
 vi.mock("./SearchHitCard", () => ({ SearchHitCard: () => <article /> }))
 vi.mock("@/utils/api", () => ({ notifyJobSearchViewV3: vi.fn() }))
@@ -112,5 +113,84 @@ describe("SearchResultsList, proposition du mode emplois à l'état vide", () =>
   it("n'affiche aucune proposition hors comptage", () => {
     expect(renderEmpty({ count: { status: "idle" }, onSwitch: vi.fn() })).not.toContain("Voir ces résultats")
     expect(renderEmpty()).not.toContain("Voir ces résultats")
+  })
+})
+
+describe("SearchResultsList, erreurs de chargement", () => {
+  const GENERIC = "Une erreur est survenue lors du chargement des résultats."
+  const RATE_LIMITED = "Trop de recherches ont été lancées en peu de temps. Réessayez dans quelques secondes."
+  const RETRY = "Relancer la recherche"
+  const apiError = (status: number) => ApiError.build("/v1/search", new Headers(), {}, new Response("", { status }))
+
+  const withError = async (status: number, pages: ReturnType<typeof page>[] | null, hasNextPage = false) => {
+    const error = await apiError(status)
+    return renderToStaticMarkup(
+      <SearchResultsList
+        result={
+          {
+            data: pages ? { pages, pageParams: pages.map((_, i) => i) } : undefined,
+            isLoading: false,
+            isError: true,
+            isFetching: false,
+            error,
+            fetchNextPage: vi.fn(),
+            refetch: vi.fn(),
+            hasNextPage,
+            isFetchingNextPage: false,
+          } as never
+        }
+        params={{ radius: 30 } as ISearchPageParams}
+      />
+    )
+  }
+
+  it("garde les résultats affichés et ajoute le message à la suite après un « Voir plus » limité", async () => {
+    const html = await withError(429, [page(0, 20, 1140), page(20, 20, 1140)], true)
+    expect(html.match(/<li><article><\/article><\/li>/g)).toHaveLength(40)
+    expect(html).toContain(RATE_LIMITED)
+    expect(html.indexOf(RATE_LIMITED)).toBeGreaterThan(html.lastIndexOf("<article>"))
+    expect(html).toContain("Voir plus de résultats")
+    expect(html).not.toContain(GENERIC)
+  })
+
+  it("n'annonce pas le message par l'alerte, la zone de statut de la page s'en charge", async () => {
+    const html = await withError(429, [page(0, 20, 1140)], true)
+    expect(html).not.toContain('role="alert"')
+  })
+
+  it("affiche le message dédié et un bouton de relance au premier chargement", async () => {
+    const html = await withError(429, null)
+    expect(html).toContain(RATE_LIMITED)
+    expect(html).toContain(RETRY)
+    expect(html).not.toContain(GENERIC)
+    expect(html).not.toContain('role="alert"')
+  })
+
+  it.each([
+    ["sans résultat chargé", null],
+    ["avec des résultats chargés", [page(0, 20, 1140)]],
+  ])("garde l'erreur générique pour une 500, %s", async (_label, pages) => {
+    const html = await withError(500, pages)
+    expect(html).toContain(GENERIC)
+    expect(html).not.toContain(RATE_LIMITED)
+    expect(html).not.toContain(RETRY)
+    expect(html).not.toContain("<article>")
+    expect(html).toContain('role="alert"')
+  })
+})
+
+describe("RateLimitedNotice", () => {
+  it("propose la relance", () => {
+    const html = renderToStaticMarkup(<RateLimitedNotice retrying={false} onRetry={vi.fn()} />)
+    expect(html).toContain("Relancer la recherche")
+    expect(html).not.toContain('aria-disabled="true"')
+  })
+
+  // Même bouton pendant la relance, désactivé par aria-disabled, pour garder le focus (RGAA 12.8).
+  it("garde le bouton pendant la relance, désactivé sans perdre le focus", () => {
+    const html = renderToStaticMarkup(<RateLimitedNotice retrying onRetry={vi.fn()} />)
+    expect(html).toContain("Chargement…")
+    expect(html).toContain('aria-disabled="true"')
+    expect(html).not.toContain(" disabled")
   })
 })
